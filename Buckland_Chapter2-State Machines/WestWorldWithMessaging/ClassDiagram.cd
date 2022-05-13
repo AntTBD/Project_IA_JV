@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BaseGameEntity">
+    <Position X="1.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQIAABAAAAAgAAAAEAAAAAAAAAAACAAAAAUAAAAAAA=</HashCode>
+      <FileName>BaseGameEntity.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EntityManager">
+    <Position X="22.5" Y="1" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Typedef Name="EntityManager::EntityMap" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EntityManager.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAABQBAAAAAAAAAAAAQAAgAAAAQAA=</HashCode>
+      <FileName>EntityManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MessageDispatcher">
+    <Position X="26.25" Y="4.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAEAAAAAAAIAAAAAAAQQAAgAAAAAQA=</HashCode>
+      <FileName>MessageDispatcher.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Miner">
+    <Position X="0.5" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAQAMABADEwwAAACAAIJAAAAAGAAAAAAABAAEBAAYAA=</HashCode>
+      <FileName>Miner.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EnterMineAndDigForNugget">
+    <Position X="9.75" Y="6.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAIAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinerOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VisitBankAndDepositGold">
+    <Position X="16.25" Y="6.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEQAAAAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinerOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GoHomeAndSleepTilRested">
+    <Position X="6.5" Y="6.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAQAAAAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinerOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QuenchThirst">
+    <Position X="7.75" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinerOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EatStew">
+    <Position X="12.25" Y="9" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABQAAAAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinerOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MinersWife">
+    <Position X="2.75" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQACABAAAgAAAAAAAIMAAAAgCAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>MinersWife.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WifesGlobalState">
+    <Position X="10.5" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAQAAAAAAAAAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinersWifeOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DoHouseWork">
+    <Position X="13.75" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAYACgAAABAAA=</HashCode>
+      <FileName>MinersWifeOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VisitBathroom">
+    <Position X="13.75" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAACAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinersWifeOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CookStew">
+    <Position X="16.5" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAABAAAAEAAAAYACgAAAAAAA=</HashCode>
+      <FileName>MinersWifeOwnedStates.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="State&lt;entity_type&gt;">
+    <Position X="12.5" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAIACAABAAAAA=</HashCode>
+      <FileName>D:\TBD Antoine\Developpement\Projets\UQAC\IA pour le JV\code_source_devoir_1\Common\FSM\State.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StateMachine&lt;entity_type&gt;">
+    <Position X="20" Y="1" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQQEIBAgIAJBAAAAAAAASAAAAAgIAABCAAAgAAAQAA=</HashCode>
+      <FileName>D:\TBD Antoine\Developpement\Projets\UQAC\IA pour le JV\code_source_devoir_1\Common\FSM\StateMachine.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CrudeTimer">
+    <Position X="29.25" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAACAAAAAAAAAAAAIAQAAgAAAAAAA=</HashCode>
+      <FileName>D:\TBD Antoine\Developpement\Projets\UQAC\IA pour le JV\code_source_devoir_1\Common\Time\CrudeTimer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Telegram">
+    <Position X="26.75" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAggAAAAAAABAAAAAAAAAAAAEBAAAAAAAAAAIAAA=</HashCode>
+      <FileName>D:\TBD Antoine\Developpement\Projets\UQAC\IA pour le JV\code_source_devoir_1\Common\Messaging\Telegram.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="__unnamed_enum_0005_1">
+    <Position X="4" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAACAAAA=</HashCode>
+      <FileName>EntityNames.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="location_type">
+    <Position X="30" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAgAAAAAAAAAAAAAAAQAAAAAAAAAAQA=</HashCode>
+      <FileName>Locations.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="message_type">
+    <Position X="26.5" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MessageTypes.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
