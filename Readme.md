@@ -3,5 +3,5 @@
 - Nicolas DEBEAULIEU
 - Antoine TABARAUD
 
-## Nouvelles fonctionnalitées:
+## Nouvelles fonctionnalités:
 - 
