@@ -30,7 +30,7 @@ void WifesGlobalState::Execute(MinersWife* wife)
 {
   //1 in 10 chance of needing the bathroom (provided she is not already
   //in the bathroom)
-  if ( (RandFloat() < 0.1) && 
+  if ( (RandFloat() < 0.1) &&
        !wife->GetFSM()->isInState(*VisitBathroom::Instance()) )
   {
     wife->GetFSM()->ChangeState(VisitBathroom::Instance());

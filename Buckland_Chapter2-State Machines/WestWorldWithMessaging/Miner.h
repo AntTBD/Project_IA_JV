@@ -18,6 +18,7 @@
 #include "misc/ConsoleUtils.h"
 #include "MinerOwnedStates.h"
 #include "fsm/StateMachine.h"
+#include "misc/Utils.h"
 
 template <class entity_type> class State;
 struct Telegram;
@@ -94,6 +95,7 @@ public:
   bool          PocketsFull()const{return m_iGoldCarried >= MaxNuggets;}
 
   bool          Fatigued()const;
+  bool          TiredToFight()const;
   void          DecreaseFatigue(){m_iFatigue -= 1;}
   void          IncreaseFatigue(){m_iFatigue += 1;}
 

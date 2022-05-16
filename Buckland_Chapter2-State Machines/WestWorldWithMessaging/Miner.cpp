@@ -47,3 +47,13 @@ bool Miner::Fatigued()const
 
   return false;
 }
+
+bool Miner::TiredToFight()const
+{
+    if (m_iFatigue > TirednessThreshold * 1.5)
+    {
+        return true;
+    }
+
+    return false;
+}

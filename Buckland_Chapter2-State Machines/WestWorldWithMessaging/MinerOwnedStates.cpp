@@ -239,7 +239,7 @@ void QuenchThirst::Execute(Miner* pMiner)
 
   cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "That's mighty fine sippin' liquer";
 
-  pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());  
+  pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
 }
 
 
@@ -251,8 +251,24 @@ void QuenchThirst::Exit(Miner* pMiner)
 
 bool QuenchThirst::OnMessage(Miner* pMiner, const Telegram& msg)
 {
-  //send msg to global message handler
-  return false;
+    SetTextColor(BACKGROUND_RED|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+
+    switch(msg.Msg)
+    {
+        case Msg_Fight:
+
+            cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID())
+                 << " at time: " << Clock->GetCurrentTime();
+
+            SetTextColor(FOREGROUND_RED|FOREGROUND_INTENSITY);
+
+            pMiner->GetFSM()->ChangeState(FightMode::Instance());
+
+            return true;
+
+    }//end switch
+
+    return false; //send message to global message handler
 }
 
 //------------------------------------------------------------------------EatStew
@@ -287,6 +303,64 @@ bool EatStew::OnMessage(Miner* pMiner, const Telegram& msg)
 {
   //send msg to global message handler
   return false;
+}
+
+
+//------------------------------------------------------------------------FightMode
+
+FightMode* FightMode::Instance()
+{
+    static FightMode instance;
+
+    return &instance;
+}
+
+
+void FightMode::Enter(Miner* pMiner)
+{
+    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "I bet you can't tell skunks from house cats!";
+}
+
+void FightMode::Execute(Miner* pMiner)
+{
+    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Take that, yellow belly!";
+
+    pMiner->IncreaseFatigue();
+
+    if(RandFloat() < 0.5)
+    {
+        Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+                                  pMiner->ID(),      //ID of sender
+                                  ent_Drunk_Claudius,   //ID of recipient
+                                  Msg_WinFight,         //the message
+                                  NO_ADDITIONAL_INFO);
+
+        pMiner->GetFSM()->ChangeState(GoHomeAndSleepTilRested::Instance());
+    }
+    else
+    {
+        Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+                                  pMiner->ID(),      //ID of sender
+                                  ent_Drunk_Claudius,   //ID of recipient
+                                  Msg_LostFight,        //the message
+                                  NO_ADDITIONAL_INFO);
+        
+        pMiner->GetFSM()->ChangeState(QuenchThirst::Instance());
+    }
+}
+
+void FightMode::Exit(Miner* pMiner)
+{
+
+    SetTextColor(FOREGROUND_RED|FOREGROUND_INTENSITY);
+    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "I'd better get some rest...";
+}
+
+
+bool FightMode::OnMessage(Miner* pMiner, const Telegram& msg)
+{
+    //send msg to global message handler
+    return false;
 }
 
 

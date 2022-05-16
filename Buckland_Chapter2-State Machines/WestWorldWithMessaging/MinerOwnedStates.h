@@ -173,6 +173,35 @@ public:
 };
 
 
+//------------------------------------------------------------------------
+//
+//  this is implemented as a state blip. The miner eats the stew, gives
+//  Elsa some compliments and then returns to his previous state
+//------------------------------------------------------------------------
+class FightMode : public State<Miner>
+{
+private:
+
+    FightMode(){}
+
+    //copy ctor and assignment should be private
+    FightMode(const FightMode&);
+    FightMode& operator=(const FightMode&);
+
+public:
+
+    //this is a singleton
+    static FightMode* Instance();
+
+    virtual void Enter(Miner* miner);
+
+    virtual void Execute(Miner* miner);
+
+    virtual void Exit(Miner* miner);
+
+    virtual bool OnMessage(Miner* agent, const Telegram& msg);
+};
+
 
 
 #endif
