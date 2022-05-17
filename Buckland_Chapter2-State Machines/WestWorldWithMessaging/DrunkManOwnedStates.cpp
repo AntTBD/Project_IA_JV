@@ -28,12 +28,12 @@ IsDrinking* IsDrinking::Instance()
 
 void IsDrinking::Enter(DrunkMan* pDrunkMan)
 {
-  cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Let's drink !";
+    pDrunkMan->AddMessage("Let's drink !");
 }
 
 void IsDrinking::Execute(DrunkMan* pDrunkMan)
 {
-  cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Drinkin' som' beer !";
+    pDrunkMan->AddMessage("Drinkin' som' beer !");
   pDrunkMan->IncreaseAlcoholLevel();
 
   if(pDrunkMan->isAlcoholic())
@@ -44,7 +44,7 @@ void IsDrinking::Execute(DrunkMan* pDrunkMan)
 
 void IsDrinking::Exit(DrunkMan* pDrunkMan)
 {
-  cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Think i'm gettin' drunk man !";
+    pDrunkMan->AddMessage("Think i'm gettin' drunk man !");
 }
 
 bool IsDrinking::OnMessage(DrunkMan* pDrunkMan, const Telegram& msg)
@@ -63,11 +63,11 @@ DrunkFight* DrunkFight::Instance()
 
 void DrunkFight::Enter(DrunkMan* pDrunkMan)
 {
-  cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Who wants to get these damn hands ?";
+    pDrunkMan->AddMessage("Who wants to get these damn hands ?");
 }
 
 void DrunkFight::Execute(DrunkMan* pDrunkMan) {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Ready to kick some ass ! *burp*";
+    pDrunkMan->AddMessage("Ready to kick some ass ! *burp*");
 
     pDrunkMan->IncreaseAlcoholLevel();
 
@@ -80,24 +80,19 @@ void DrunkFight::Execute(DrunkMan* pDrunkMan) {
 
 void DrunkFight::Exit(DrunkMan* pDrunkMan)
 {
-  cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Claudius stopped fighting.";
+    pDrunkMan->AddMessage("Claudius stopped fighting.");
 }
 
 bool DrunkFight::OnMessage(DrunkMan* pDrunkMan, const Telegram& msg)
 {
-    SetTextColor(BACKGROUND_RED|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
-
     switch(msg.Msg)
     {
         case Msg_LostFight:
 
-            cout << "\nMessage handled by " << GetNameOfEntity(pDrunkMan->ID())
-                 << " at time: " << Clock->GetCurrentTime();
+            pDrunkMan->AddMessage("\nMessage handled by " + GetNameOfEntity(pDrunkMan->ID())
+                 + " at time: " + std::to_string(Clock->GetCurrentTime()), true);
 
-            SetTextColor(FOREGROUND_BLUE|FOREGROUND_INTENSITY);
-
-            cout << "\n" << GetNameOfEntity(pDrunkMan->ID())
-                 << ": F*** You Bob, i'll get ya next time !";
+            pDrunkMan->AddMessage("F*** You Bob, i'll get ya next time !");
 
             pDrunkMan->GetFSM()->ChangeState(SoberingUp::Instance());
 
@@ -105,13 +100,10 @@ bool DrunkFight::OnMessage(DrunkMan* pDrunkMan, const Telegram& msg)
 
         case Msg_WinFight:
 
-            cout << "\nMessage handled by " << GetNameOfEntity(pDrunkMan->ID())
-                 << " at time: " << Clock->GetCurrentTime();
+            pDrunkMan->AddMessage("\nMessage handled by " + GetNameOfEntity(pDrunkMan->ID())
+                 + " at time: " + std::to_string(Clock->GetCurrentTime()), true);
 
-            SetTextColor(FOREGROUND_BLUE|FOREGROUND_INTENSITY);
-
-            cout << "\n" << GetNameOfEntity(pDrunkMan->ID())
-                 << ": I beat his damn ass ! Time to shake some booties !";
+            pDrunkMan->AddMessage("I beat his damn ass ! Time to shake some booties !");
 
             pDrunkMan->GetFSM()->ChangeState(IsSinging::Instance());
 
@@ -133,12 +125,12 @@ SoberingUp* SoberingUp::Instance()
 
 void SoberingUp::Enter(DrunkMan *pDrunkMan)
 {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "ZzZZzz...zzZzz...";
+    pDrunkMan->AddMessage("ZzZZzz...zzZzz...");
 }
 
 void SoberingUp::Execute(DrunkMan *pDrunkMan)
 {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Zzz.. That is a big sheep..zzZ...";
+    pDrunkMan->AddMessage("Zzz.. That is a big sheep..zzZ...");
 
     pDrunkMan->DecreaseAlcoholLevel();
 
@@ -150,7 +142,7 @@ void SoberingUp::Execute(DrunkMan *pDrunkMan)
 
 void SoberingUp::Exit(DrunkMan *pDrunkMan)
 {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Argh... Ma goddamn jaw hurts...";
+    pDrunkMan->AddMessage("Argh... Ma goddamn jaw hurts...");
 }
 
 bool SoberingUp::OnMessage(DrunkMan *pDrunkMan, const Telegram &msg)
@@ -170,27 +162,25 @@ IsSinging* IsSinging::Instance()
 
 void IsSinging::Enter(DrunkMan *pDrunkMan)
 {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Yeeeeeehaaaaaa! Claudius starts dancing";
+    pDrunkMan->AddMessage("Yeeeeeehaaaaaa! Claudius starts dancing");
 }
 
 void IsSinging::Execute(DrunkMan *pDrunkMan)
 {
     if (RandFloat() > 0.5)
     {
-        cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Where did you come from, where did you go?! "
-                                                                    "Where did you come from, Cotton-Eye Joe?";
+        pDrunkMan->AddMessage("Where did you come from, where did you go?! Where did you come from, Cotton-Eye Joe?");
     }
     else
     {
-        cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "If it hadn't been for Cotton-Eye Joe!"
-                                                                    "I'd been married long time ago!";
+        pDrunkMan->AddMessage("If it hadn't been for Cotton-Eye Joe! I'd been married long time ago!");
     }
     pDrunkMan->GetFSM()->ChangeState(SoberingUp::Instance());
 }
 
 void IsSinging::Exit(DrunkMan *pDrunkMan)
 {
-    cout << "\n" << GetNameOfEntity(pDrunkMan->ID()) << ": " << "Is da table tilted or is it ma legs ?? *falls*";
+    pDrunkMan->AddMessage("Is da table tilted or is it ma legs ?? *falls*");
 }
 
 bool IsSinging::OnMessage(DrunkMan *pDrunkMan, const Telegram &msg)

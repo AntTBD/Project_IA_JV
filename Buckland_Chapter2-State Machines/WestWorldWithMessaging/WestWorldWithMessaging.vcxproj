@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\Common\Time\CrudeTimer.cpp" />
     <ClCompile Include="BaseGameEntity.cpp" />
+    <ClCompile Include="DialogApp.cpp" />
     <ClCompile Include="DrunkMan.cpp" />
     <ClCompile Include="DrunkManOwnedStates.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageDispatcher.cpp" />
+    <ClCompile Include="MessagesManager.cpp" />
     <ClCompile Include="Miner.cpp" />
     <ClCompile Include="MinerOwnedStates.cpp" />
     <ClCompile Include="MinersWife.cpp" />
@@ -150,12 +152,14 @@
     <ClInclude Include="..\..\Common\Time\CrudeTimer.h" />
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="BaseGameEntity.h" />
+    <ClInclude Include="DialogApp.h" />
     <ClInclude Include="DrunkMan.h" />
     <ClInclude Include="DrunkManOwnedStates.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="EntityNames.h" />
     <ClInclude Include="Locations.h" />
     <ClInclude Include="MessageDispatcher.h" />
+    <ClInclude Include="MessagesManager.h" />
     <ClInclude Include="MessageTypes.h" />
     <ClInclude Include="Miner.h" />
     <ClInclude Include="MinerOwnedStates.h" />

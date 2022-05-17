@@ -23,3 +23,7 @@ void BaseGameEntity::SetID(int val)
     
   m_iNextValidID = m_ID + 1;
 }
+
+void BaseGameEntity::AddMessage(std::string message, bool isHandleMessage) {
+    MessagesManager.AddMessage(message, this->ID(), isHandleMessage);
+}

@@ -12,6 +12,8 @@
 #include <string>
 
 #include "messaging/Telegram.h"
+#include "EntityNames.h"
+#include "MessagesManager.h"
 
 
 class BaseGameEntity
@@ -48,7 +50,9 @@ public:
   //using the MessageDispatcher singleton class
   virtual bool  HandleMessage(const Telegram& msg)=0;
 
-  int           ID()const{return m_ID;}  
+  int           ID()const{return m_ID;}
+
+  void          AddMessage(std::string message, bool isHandleMessage = false);
 };
 
 

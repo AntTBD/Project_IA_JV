@@ -8,7 +8,5 @@ bool DrunkMan::HandleMessage(const Telegram& msg)
 
 void DrunkMan::Update()
 {
-    SetTextColor(FOREGROUND_BLUE| FOREGROUND_INTENSITY);
-
     m_pStateMachine->Update();
 }
