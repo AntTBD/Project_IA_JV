@@ -28,7 +28,7 @@ void DialogApp::OneEntity::UpdateBaseGameEntity(){
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
     }
     this->isAlive = false;
-    std::cout << "\n" << GetNameOfEntity(this->baseGameEntity->ID()) << " has ended !";
+    MessagesManager.AddMessage(" has ended !", this->baseGameEntity->ID() );
 }
 
 DialogApp::DialogApp(int numberOfCalls) : numberOfCalls(numberOfCalls) 
