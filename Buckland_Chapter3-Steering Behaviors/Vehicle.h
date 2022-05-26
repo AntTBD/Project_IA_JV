@@ -25,6 +25,11 @@ class SteeringBehavior;
 
 class Vehicle : public MovingEntity
 {
+public:
+    enum RenderColor {
+        Leader,
+        Poursuiveur
+    };
 
 private:
 
@@ -64,6 +69,8 @@ private:
   Vehicle& operator=(const Vehicle&);
 
 
+  RenderColor renderColor;
+
 public:
 
   Vehicle(GameWorld* world,
@@ -97,6 +104,9 @@ public:
   void        ToggleSmoothing(){m_bSmoothingOn = !m_bSmoothingOn;}
   
   double       TimeElapsed()const{return m_dTimeElapsed;}
+
+  void       SetRenderColor(RenderColor color){renderColor = color;}
+  RenderColor GetRenderColor()const{return renderColor;}
  
 };
 

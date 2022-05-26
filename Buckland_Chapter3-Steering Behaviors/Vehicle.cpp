@@ -131,7 +131,18 @@ void Vehicle::Render()
 
   else
   {
-    gdi->BluePen();
+      // Custom color for the vehicle Leader or Poursuiveur
+      switch (this->GetRenderColor()) {
+        case Leader:
+          gdi->RedPen();
+          break;
+        case Poursuiveur:
+          gdi->BluePen();
+          break;
+        default:
+            gdi->BluePen();
+          break;
+      }
   }
 
   if (Steering()->isInterposeOn())

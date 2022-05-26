@@ -18,6 +18,13 @@
 #define ID_VIEW_FPS                     40013
 #define ID_MENU_SMOOTHING               40014
 #define IDM_PARTITION_VIEW_NEIGHBORS    40015
+#define ID_P_WANDER                     40016 // Poursuiveur en Random
+#define ID_P_V                          40017 // Poursuiveur en V
+#define ID_P_Line                       40018 // Poursuiveur en File
+#define ID_P_CIRCLE                     40019 // Poursuiveur en Cercle
+#define ID_P_MULTIPLE_CIRCLE            40020 // Poursuiveur en Cercle multiple
+#define ID_L_WANDER                     40021 // Leader en Random
+#define ID_L_KEYS                       40022 // Leader using keys
 
 // Next default values for new objects
 // 
@@ -29,3 +36,9 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+// Get Arrow Keys
+#define KEY_UP		72
+#define KEY_DOWN	80
+#define KEY_LEFT	75
+#define KEY_RIGHT	77

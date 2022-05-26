@@ -1,5 +1,6 @@
 #ifndef GameWorld_H
 #define GameWorld_H
+#define _USE_MATH_DEFINES
 #pragma warning (disable:4786)
 //------------------------------------------------------------------------
 //
@@ -14,6 +15,8 @@
 //------------------------------------------------------------------------
 #include <windows.h>
 #include <vector>
+#include <iostream>
+#include <cmath>
 
 #include "2d/Vector2D.h"
 #include "time/PrecisionTimer.h"
@@ -21,6 +24,8 @@
 #include "BaseGameEntity.h"
 #include "EntityFunctionTemplates.h"
 #include "vehicle.h"
+#include "AgentLeader.h"
+#include "AgentPoursuiveur.h"
 
 
 class Obstacle;
@@ -37,6 +42,7 @@ private:
 
   //a container of all the moving entities
   std::vector<Vehicle*>         m_Vehicles;
+  AgentLeader*                  m_VehicleLeader;
 
   //any obstacles
   std::vector<BaseGameEntity*>  m_Obstacles;
@@ -60,6 +66,16 @@ private:
 
   //keeps track of the average FPS
   double                         m_dAvFrameTime;
+
+  //Flight formation
+  enum FlightFormation{
+      Wander,
+      Line,
+      V,
+      Circle,
+      MultipleCircles
+  };
+    FlightFormation formation;
 
 
   //flags to turn aids and obstacles etc on/off
@@ -91,6 +107,8 @@ public:
   void  Update(double time_elapsed);
 
   void  Render();
+
+  void  UpdateFormation();
 
 
   void  NonPenetrationContraint(Vehicle* v){EnforceNonPenetrationConstraint(v, m_Vehicles);}

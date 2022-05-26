@@ -1,5 +1,7 @@
 #include "GameWorld.h"
 #include "Vehicle.h"
+#include "AgentLeader.h"
+#include "AgentPoursuiveur.h"
 #include "constants.h"
 #include "Obstacle.h"
 #include "2d/Geometry.h"
@@ -48,16 +50,11 @@ GameWorld::GameWorld(int cx, int cy):
   double border = 30;
   m_pPath = new Path(5, border, border, cx-border, cy-border, true); 
 
-  //setup the agents
-  for (int a=0; a<Prm.NumAgents; ++a)
-  {
-
+  // agent leader
     //determine a random starting position
     Vector2D SpawnPos = Vector2D(cx/2.0+RandomClamped()*cx/2.0,
                                  cy/2.0+RandomClamped()*cy/2.0);
-
-
-    Vehicle* pVehicle = new Vehicle(this,
+    this->m_VehicleLeader = new AgentLeader(this,
                                     SpawnPos,                 //initial position
                                     RandFloat()*TwoPi,        //start rotation
                                     Vector2D(0,0),            //velocity
@@ -66,8 +63,34 @@ GameWorld::GameWorld(int cx, int cy):
                                     Prm.MaxSpeed,             //max velocity
                                     Prm.MaxTurnRatePerSecond, //max turn rate
                                     Prm.VehicleScale);        //scale
+    m_Vehicles.push_back(this->m_VehicleLeader);
+    //add it to the cell subdivision
+    m_pCellSpace->AddEntity(this->m_VehicleLeader);
 
-    pVehicle->Steering()->FlockingOn();
+
+  //setup the agents
+  for (int a=0; a<Prm.NumAgents; ++a)
+  {
+
+    //determine a random starting position
+    Vector2D SpawnPos = Vector2D(cx/2.0+RandomClamped()*cx/2.0,
+                                 cy/2.0+RandomClamped()*cy/2.0);
+
+      AgentPoursuiveur* pVehicle = new AgentPoursuiveur(this,
+                                      SpawnPos,                 //initial position
+                                      RandFloat()*TwoPi,        //start rotation
+                                      Vector2D(0,0),            //velocity
+                                      Prm.VehicleMass,          //mass
+                                      Prm.MaxSteeringForce,     //max force
+                                      Prm.MaxSpeed,             //max velocity
+                                      Prm.MaxTurnRatePerSecond, //max turn rate
+                                      Prm.VehicleScale,         //scale
+                                      this->m_VehicleLeader,
+                                      m_Vehicles.back(),
+                                      Vector2D(-5,-5),
+                                      a,
+                                      Prm.NumAgents
+                                      );
 
     m_Vehicles.push_back(pVehicle);
 
@@ -76,7 +99,7 @@ GameWorld::GameWorld(int cx, int cy):
   }
 
 
-#define SHOAL
+//#define SHOAL
 #ifdef SHOAL
   m_Vehicles[Prm.NumAgents-1]->Steering()->FlockingOff();
   m_Vehicles[Prm.NumAgents-1]->SetScale(Vector2D(10, 10));
@@ -249,7 +272,6 @@ void GameWorld::SetCrosshair(POINTS p)
 //------------------------- HandleKeyPresses -----------------------------
 void GameWorld::HandleKeyPresses(WPARAM wParam)
 {
-
   switch(wParam)
   {
   case 'U':
@@ -308,6 +330,29 @@ void GameWorld::HandleKeyPresses(WPARAM wParam)
           }
         }
         break;
+
+    // Move left
+    case 'Q':
+    case 'A':
+        m_VehicleLeader->TurnLeft();
+        break;
+
+    // Move right
+    case 'D':
+        m_VehicleLeader->TurnRight();
+        break;
+
+    // Accelerate leader
+    case 'Z':
+    case 'W':
+        m_VehicleLeader->IncreaseSpeed();
+        break;
+
+    // Decelerate leader
+    case 'S':
+        m_VehicleLeader->DecreaseSpeed();
+        break;
+
 
   }//end switch
 }
@@ -507,10 +552,224 @@ void GameWorld::HandleMenuItems(WPARAM wParam, HWND hwnd)
       }
 
       break;
+
+      case ID_P_Line:
+      {
+          if(this->formation == Line){
+              this->formation = Wander;
+              ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+          }
+          else{
+              this->formation = Line;
+              ChangeMenuState(hwnd, ID_P_Line, MFS_CHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_UNCHECKED);
+          }
+          ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
+
+      break;
+
+      case ID_P_V:
+      {
+          if(this->formation == V)
+          {
+              this->formation = Wander;
+              ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+          }
+          else
+          {
+              this->formation = V;
+              ChangeMenuState(hwnd, ID_P_V, MFS_CHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_UNCHECKED);
+          }
+          ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
+
+      break;
+
+      case ID_P_CIRCLE:
+      {
+          if(this->formation == Circle) {
+              this->formation = Wander;
+              ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_UNCHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+          }
+          else {
+              this->formation = Circle;
+              ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_CHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_UNCHECKED);
+          }
+          ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
+          break;
+
+      case ID_P_MULTIPLE_CIRCLE:
+      {
+          if(this->formation == MultipleCircles) {
+              this->formation = Wander;
+              ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+          }
+          else {
+              this->formation = MultipleCircles;
+              ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_CHECKED);
+              ChangeMenuState(hwnd, ID_P_WANDER, MFS_UNCHECKED);
+          }
+          ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
+          break;
+
+      case ID_P_WANDER:
+      {
+          this->formation = Wander;
+          ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+
+          ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
+          break;
+
+      case ID_L_WANDER:
+      {
+          ChangeMenuState(hwnd, ID_L_WANDER, MFS_CHECKED);
+          ChangeMenuState(hwnd, ID_L_KEYS, MFS_UNCHECKED);
+
+          this->m_VehicleLeader->ToggleManualDriving();
+      }
+      break;
+
+      case ID_L_KEYS:
+      {
+          // Leader control by keys
+          ChangeMenuState(hwnd, ID_L_WANDER, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_L_KEYS, MFS_CHECKED);
+
+          this->m_VehicleLeader->ToggleManualDriving();
+
+          // Agent en cercle
+          this->formation = Circle;
+          ChangeMenuState(hwnd, ID_P_CIRCLE, MFS_CHECKED);
+          ChangeMenuState(hwnd, ID_P_WANDER, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_Line, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_V, MFS_UNCHECKED);
+          ChangeMenuState(hwnd, ID_P_MULTIPLE_CIRCLE, MFS_UNCHECKED);
+
+          this->UpdateFormation();
+      }
       
   }//end switch
 }
 
+// Change poursuiveur vehicles to be in line formation or V
+void  GameWorld::UpdateFormation(){
+    int vOffset = 15;
+    int hOffset = 10;
+    switch (this->formation)
+    {
+      case Line:
+          for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+          {
+              m_Vehicles[i]->Steering()->WanderOff();
+              m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i-1], Vector2D(-vOffset,0));
+          }
+          break;
+
+      case V:
+          for (int i = 1; i < m_Vehicles.size(); i++)
+          {
+              m_Vehicles[i]->Steering()->WanderOff();
+              if (i < 3) {
+                  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader,
+                                                             Vector2D(-vOffset, (i % 2 == 0 ? hOffset : -hOffset)));
+              } else {
+                  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i - 2],
+                                                             Vector2D(-vOffset, (i % 2 == 0 ? vOffset : -hOffset)));
+              }
+          }
+          break;
+
+        case Circle:
+            {
+                int ratio = 3;
+                int rayon = ratio * (m_Vehicles.size() - 1);
+                double angle = 2 * M_PI / (m_Vehicles.size() - 1);
+                for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+                {
+                    double currentCos = cos(angle * i);
+                    double currentSin = sin(angle * i);
+
+                    m_Vehicles[i]->Steering()->WanderOff();
+                    m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader, rayon * Vector2D(currentCos, currentSin));
+                }
+            }
+            break;
+
+        case Wander:
+            for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+            {
+                m_Vehicles[i]->Steering()->OffsetPursuitOff();
+                m_Vehicles[i]->Steering()->WanderOn();
+            }
+            break;
+
+        case MultipleCircles:
+        {
+            int count = 0;
+
+            int rayon = 20;
+            int countPerCircle = 10;
+
+            Vector2D range = Vector2D(1, 11);
+
+            do
+            {
+                count ++;
+
+                double angle = 2 * M_PI / (range.y - range.x);
+
+                for (unsigned int i=range.x; i < range.y; ++i)
+                {
+                    double currentCos = cos(angle * i);
+                    double currentSin = sin(angle * i);
+
+                    m_Vehicles[i]->Steering()->WanderOff();
+                    m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader, count * rayon * Vector2D(currentCos, currentSin));
+                }
+
+                if (range.y >= m_Vehicles.size()) break;
+
+                range.x = range.y;
+                range.y = range.y + countPerCircle * count;
+
+                if(range.y > m_Vehicles.size()) range.y = m_Vehicles.size();
+
+            } while(true);
+        }
+            break;
+    }
+}
 
 //------------------------------ Render ----------------------------------
 //------------------------------------------------------------------------
@@ -536,7 +795,7 @@ void GameWorld::Render()
   //render the agents
   for (unsigned int a=0; a<m_Vehicles.size(); ++a)
   {
-    m_Vehicles[a]->Render();  
+    m_Vehicles[a]->Render();
     
     //render cell partitioning stuff
     if (m_bShowCellSpaceInfo && a==0)
@@ -589,5 +848,4 @@ void GameWorld::Render()
   {
     m_pCellSpace->RenderCells();
   }
-
 }

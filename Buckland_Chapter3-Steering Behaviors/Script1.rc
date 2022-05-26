@@ -53,7 +53,20 @@ BEGIN
     BEGIN
         MENUITEM "On/Off",                      ID_MENU_SMOOTHING
     END
-END
+    POPUP "Poursuiveurs"
+    BEGIN
+        MENUITEM "Wander",                      ID_P_WANDER
+        MENUITEM "En Ligne",                    ID_P_Line
+        MENUITEM "En Cercle",                   ID_P_CIRCLE
+        MENUITEM "En V",                        ID_P_V
+        MENUITEM "En Cercle Multiple",          ID_P_MULTIPLE_CIRCLE
+    END
+    POPUP "Leader"
+    BEGIN
+        MENUITEM "Wander",                      ID_L_WANDER
+        MENUITEM "KeyBoard",                    ID_L_KEYS
+    END
+    END
 
 
 #ifdef APSTUDIO_INVOKED

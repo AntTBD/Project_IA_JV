@@ -16,7 +16,7 @@
 //
 //------------------------------------------------------------------------
 
-char* g_szApplicationName = "Steering Behaviors - Another Big Shoal";
+char* g_szApplicationName = "Steering Behaviors - Claude 3000";
 char*	g_szWindowClassName = "MyWindowClass";
 
 GameWorld* g_GameWorld;
@@ -83,8 +83,10 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          
          g_GameWorld = new GameWorld(cxClient, cyClient);
 
-         ChangeMenuState(hwnd, IDR_PRIORITIZED, MFS_CHECKED);
+         ChangeMenuState(hwnd, IDR_WEIGHTED_SUM, MFS_CHECKED);
          ChangeMenuState(hwnd, ID_VIEW_FPS, MFS_CHECKED);
+         ChangeMenuState(hwnd, ID_P_WANDER, MFS_CHECKED);
+         ChangeMenuState(hwnd, ID_L_WANDER, MFS_CHECKED);
          
       }
 
