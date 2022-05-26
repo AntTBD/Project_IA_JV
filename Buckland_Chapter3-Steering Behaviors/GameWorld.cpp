@@ -24,7 +24,6 @@ using std::list;
 //------------------------------- ctor -----------------------------------
 //------------------------------------------------------------------------
 GameWorld::GameWorld(int cx, int cy):
-
             m_cxClient(cx),
             m_cyClient(cy),
             m_bPaused(false),
@@ -63,20 +62,19 @@ GameWorld::GameWorld(int cx, int cy):
                                     Prm.MaxSpeed,             //max velocity
                                     Prm.MaxTurnRatePerSecond, //max turn rate
                                     Prm.VehicleScale);        //scale
+
     m_Vehicles.push_back(this->m_VehicleLeader);
     //add it to the cell subdivision
     m_pCellSpace->AddEntity(this->m_VehicleLeader);
 
-
   //setup the agents
   for (int a=0; a<Prm.NumAgents; ++a)
   {
-
     //determine a random starting position
     Vector2D SpawnPos = Vector2D(cx/2.0+RandomClamped()*cx/2.0,
                                  cy/2.0+RandomClamped()*cy/2.0);
 
-      AgentPoursuiveur* pVehicle = new AgentPoursuiveur(this,
+    AgentPoursuiveur* pVehicle = new AgentPoursuiveur(this,
                                       SpawnPos,                 //initial position
                                       RandFloat()*TwoPi,        //start rotation
                                       Vector2D(0,0),            //velocity
@@ -85,14 +83,10 @@ GameWorld::GameWorld(int cx, int cy):
                                       Prm.MaxSpeed,             //max velocity
                                       Prm.MaxTurnRatePerSecond, //max turn rate
                                       Prm.VehicleScale,         //scale
-                                      this->m_VehicleLeader,
-                                      m_Vehicles.back(),
-                                      Vector2D(-5,-5),
-                                      a,
-                                      Prm.NumAgents
-                                      );
+                                      this->m_VehicleLeader);   //leader
 
     m_Vehicles.push_back(pVehicle);
+    m_VehiclesPoursuiveur.push_back(pVehicle);
 
     //add it to the cell subdivision
     m_pCellSpace->AddEntity(pVehicle);
@@ -689,63 +683,60 @@ void  GameWorld::UpdateFormation(){
     switch (this->formation)
     {
       case Line:
-          for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+          for (unsigned int i=0; i<m_VehiclesPoursuiveur.size(); ++i)
           {
-              m_Vehicles[i]->Steering()->WanderOff();
-              m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i-1], Vector2D(-vOffset,0));
+              Vehicle* target = (i == 0 ? m_VehicleLeader : (Vehicle*) m_VehiclesPoursuiveur[i-1]);
+              m_VehiclesPoursuiveur[i]->FormationLine(target, -vOffset);
           }
           break;
 
       case V:
-          for (int i = 1; i < m_Vehicles.size(); i++)
+          for (int i = 0; i < m_VehiclesPoursuiveur.size(); i++)
           {
-              m_Vehicles[i]->Steering()->WanderOff();
-              if (i < 3) {
-                  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader,
-                                                             Vector2D(-vOffset, (i % 2 == 0 ? hOffset : -hOffset)));
-              } else {
-                  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i - 2],
-                                                             Vector2D(-vOffset, (i % 2 == 0 ? vOffset : -hOffset)));
-              }
+              Vehicle* target = (i < 2 ? m_VehicleLeader : (Vehicle*) m_VehiclesPoursuiveur[i-2]);
+              m_VehiclesPoursuiveur[i]->FormationV(target, Vector2D(vOffset, hOffset), i);
           }
           break;
 
         case Circle:
             {
+                // Used to determine the radius of the circle based on the nb of following vehicles
                 int ratio = 3;
-                int rayon = ratio * (m_Vehicles.size() - 1);
-                double angle = 2 * M_PI / (m_Vehicles.size() - 1);
-                for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+                int radius = ratio * m_VehiclesPoursuiveur.size();
+                double angle = 2 * M_PI / m_VehiclesPoursuiveur.size() ;
+
+                for (unsigned int i=0; i<m_VehiclesPoursuiveur.size(); ++i)
                 {
                     double currentCos = cos(angle * i);
                     double currentSin = sin(angle * i);
 
-                    m_Vehicles[i]->Steering()->WanderOff();
-                    m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader, rayon * Vector2D(currentCos, currentSin));
+                    m_VehiclesPoursuiveur[i]->FormationCirle(radius * Vector2D(currentCos, currentSin));
                 }
             }
             break;
 
         case Wander:
-            for (unsigned int i=1; i<m_Vehicles.size(); ++i)
+            for (unsigned int i=0; i<m_VehiclesPoursuiveur.size(); ++i)
             {
-                m_Vehicles[i]->Steering()->OffsetPursuitOff();
-                m_Vehicles[i]->Steering()->WanderOn();
+                m_VehiclesPoursuiveur[i]->FormationWander();
             }
             break;
 
         case MultipleCircles:
         {
-            int count = 0;
+            int nbrCircles = 0;
 
-            int rayon = 20;
+            int current_radius = 40;
+
+            int increment_radius = 20;
+
             int countPerCircle = 10;
 
-            Vector2D range = Vector2D(1, 11);
+            Vector2D range = Vector2D(0, 10);
 
-            do
+            while(nbrCircles < 100)
             {
-                count ++;
+                nbrCircles ++;
 
                 double angle = 2 * M_PI / (range.y - range.x);
 
@@ -754,18 +745,18 @@ void  GameWorld::UpdateFormation(){
                     double currentCos = cos(angle * i);
                     double currentSin = sin(angle * i);
 
-                    m_Vehicles[i]->Steering()->WanderOff();
-                    m_Vehicles[i]->Steering()->OffsetPursuitOn(m_VehicleLeader, count * rayon * Vector2D(currentCos, currentSin));
+                    m_VehiclesPoursuiveur[i]->FormationCirle(current_radius * Vector2D(currentCos, currentSin));
                 }
 
-                if (range.y >= m_Vehicles.size()) break;
+                if (range.y >= m_VehiclesPoursuiveur.size()) break;
+
+                current_radius += increment_radius;
 
                 range.x = range.y;
-                range.y = range.y + countPerCircle * count;
+                range.y = range.y + countPerCircle * (nbrCircles + 1);
 
-                if(range.y > m_Vehicles.size()) range.y = m_Vehicles.size();
-
-            } while(true);
+                if(range.y > m_VehiclesPoursuiveur.size()) range.y = m_VehiclesPoursuiveur.size();
+            }
         }
             break;
     }

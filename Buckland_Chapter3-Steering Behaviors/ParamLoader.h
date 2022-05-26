@@ -71,7 +71,7 @@ private:
     prHide                  = GetNextParameterFloat();
     prArrive                = GetNextParameterFloat();
 
-    MaxTurnRatePerSecond    = Pi;
+    MaxTurnRatePerSecond    = Pi/4;
   }
 
 public:

@@ -1458,8 +1458,10 @@ void SteeringBehavior::RenderAids( )
   if (m_pVehicle->MaxForce() < 0) m_pVehicle->SetMaxForce(0.0f);
   if (m_pVehicle->MaxSpeed() < 0) m_pVehicle->SetMaxSpeed(0.0f);
   
-  if (m_pVehicle->ID() == 0){ gdi->TextAtPos(5,NextSlot,"MaxForce(Ins/Del):"); gdi->TextAtPos(160,NextSlot,ttos(m_pVehicle->MaxForce()/Prm.SteeringForceTweaker)); NextSlot+=SlotSize;}
-  if (m_pVehicle->ID() == 0){ gdi->TextAtPos(5,NextSlot,"MaxSpeed(Home/End):"); gdi->TextAtPos(160,NextSlot,ttos(m_pVehicle->MaxSpeed()));NextSlot+=SlotSize;}
+  if (m_pVehicle->ID() == 1){ gdi->TextAtPos(5,NextSlot,"MaxForce(Ins/Del):"); gdi->TextAtPos(200,NextSlot,ttos(m_pVehicle->MaxForce()/Prm.SteeringForceTweaker)); NextSlot+=SlotSize;}
+  if (m_pVehicle->ID() == 1){ gdi->TextAtPos(5,NextSlot,"MaxSpeed(Home/End):"); gdi->TextAtPos(200,NextSlot,ttos(m_pVehicle->MaxSpeed()));NextSlot+=SlotSize;}
+  if (m_pVehicle->ID() == 0){ gdi->TextAtPos(5,NextSlot+SlotSize*2,"MaxSpeed Leader(Z-W/S):"); gdi->TextAtPos(200,NextSlot+SlotSize*2,ttos(m_pVehicle->MaxSpeed())); NextSlot+=SlotSize*3;}
+  if (m_pVehicle->ID() == 0){ gdi->TextAtPos(5,NextSlot,"Direction Leader(Q-A/D)"); NextSlot+=SlotSize;}
 
   //render the steering force
   if (m_pVehicle->World()->RenderSteeringForce())

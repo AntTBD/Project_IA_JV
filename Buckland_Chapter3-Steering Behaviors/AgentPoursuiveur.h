@@ -7,12 +7,8 @@
 class AgentPoursuiveur : public Vehicle
 {
 
-/*public:
-    Vector2D m_vOffset;
+private:
     Vehicle* m_vLeader;
-    Vehicle* m_vTarget;
-
-    int m_iNbreAgent;*/
 
 public:
     AgentPoursuiveur(GameWorld* world,
@@ -24,11 +20,14 @@ public:
                      double max_speed,
                      double max_turn_rate,
                      double scale,
-                     Vehicle* leader,
-                     Vehicle* target,
-                     Vector2D offset,
-                     int id,
-                     int count);
+                     Vehicle* leader);
+
+
+    void FormationWander();
+    void FormationCustom(Vehicle* target, Vector2D offset);
+    void FormationLine(Vehicle* target, int offset);
+    void FormationCirle(Vector2D offset);
+    void FormationV(Vehicle* target, Vector2D offset, int position);
 
 };
 

@@ -41,8 +41,9 @@ class GameWorld
 private:
 
   //a container of all the moving entities
-  std::vector<Vehicle*>         m_Vehicles;
-  AgentLeader*                  m_VehicleLeader;
+  std::vector<Vehicle*>             m_Vehicles;
+  AgentLeader*                      m_VehicleLeader;
+  std::vector<AgentPoursuiveur*>    m_VehiclesPoursuiveur;
 
   //any obstacles
   std::vector<BaseGameEntity*>  m_Obstacles;
@@ -123,11 +124,11 @@ public:
     TagNeighbors(pVehicle, m_Obstacles, range);
   }
 
-  const std::vector<Wall2D>&          Walls(){return m_Walls;}                          
-  CellSpacePartition<Vehicle*>*       CellSpace(){return m_pCellSpace;}
-  const std::vector<BaseGameEntity*>& Obstacles()const{return m_Obstacles;}
-  const std::vector<Vehicle*>&        Agents(){return m_Vehicles;}
-
+  const std::vector<Wall2D>&                Walls(){return m_Walls;}
+  CellSpacePartition<Vehicle*>*             CellSpace(){return m_pCellSpace;}
+  const std::vector<BaseGameEntity*>&       Obstacles()const{return m_Obstacles;}
+  const std::vector<Vehicle*>&              Agents(){return m_Vehicles;}
+  const std::vector<AgentPoursuiveur*>&     AgentsPoursuiveurs(){return m_VehiclesPoursuiveur;}
 
   //handle WM_COMMAND messages
   void        HandleKeyPresses(WPARAM wParam);
