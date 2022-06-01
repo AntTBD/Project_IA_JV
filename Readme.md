@@ -22,6 +22,8 @@ ___
 ## Exécutable :
 Buckland_Chapter2-State Machines\WestWorldWithMessaging\Debug\WestWorldWithMessaging.exe
 
+[Télécharger ici](../../releases/download/Devoir%2F1/WestWorldWithMessaging.zip)
+
 ## Illustrations :
 
 | Diagramme d'état transition Miner | Diagramme d'état transition DrunkMan |
@@ -56,6 +58,8 @@ Buckland_Chapter2-State Machines\WestWorldWithMessaging\Debug\WestWorldWithMessa
 :warning: **Attention** : s'il n'y est pas déjà, copier/coller le fichier **[params.ini](Buckland_Chapter3-Steering%20Behaviors/params.ini)** dans le dossier [Debug](Buckland_Chapter3-Steering%20Behaviors/Debug) ou [Release](Buckland_Chapter3-Steering%20Behaviors/Release) généré par VS Studio.
 
 Buckland_Chapter3-State Machines\Debug\Steering.exe
+
+[Télécharger ici](../../releases/download/Devoir%2F2/Steering.Behavior.zip)
 
 ## Illustrations :
 
