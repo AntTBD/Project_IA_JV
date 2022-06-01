@@ -200,6 +200,8 @@ public:
         EdgeType*  next()
         {
           ++curEdge;
+
+		  if (end()) return NULL;
     
           return &(*curEdge);
 
@@ -241,6 +243,8 @@ public:
         const EdgeType*  begin()
         {        
           curEdge = G.m_Edges[NodeIndex].begin();
+
+		  if (end()) return 0;
     
           return &(*curEdge);
         }
@@ -248,8 +252,15 @@ public:
         const EdgeType*  next()
         {
           ++curEdge;
-    
-          return &(*curEdge);
+
+		  if(end())
+		  {
+			  return NULL;
+		  }
+		  else
+		  {
+			return &(*curEdge);
+		  }
 
         }
 
@@ -307,6 +318,8 @@ public:
       node_type* next()
       {
         ++curNode;
+
+		if (end()) return NULL;
 
         GetNextValidNode(curNode);
 
@@ -368,9 +381,16 @@ public:
       {
         ++curNode;
 
-        GetNextValidNode(curNode);
+		if (end())
+		{
+			return NULL;
+		}
+		else
+		{
+			GetNextValidNode(curNode);
 
-        return &(*curNode);
+			return &(*curNode);
+		}
       }
 
       bool end()
@@ -390,7 +410,7 @@ public:
 template <class node_type, class edge_type>
 bool SparseGraph<node_type, edge_type>::isNodePresent(int nd)const
 {
-    if ( (m_Nodes[nd].Index() == invalid_node_index) || (nd >= m_Nodes.size()))
+    if ((nd >= (int)m_Nodes.size() || (m_Nodes[nd].Index() == invalid_node_index)))
     {
       return false;
     }
@@ -674,7 +694,7 @@ template <class node_type, class edge_type>
 void SparseGraph<node_type, edge_type>::SetEdgeCost(int from, int to, double NewCost)
 {
   //make sure the nodes given are valid
-  assert( (from < m_Nodes.size()) && (to < m_Nodes.size()) &&
+  assert( (from < (int)m_Nodes.size()) && (to < (int)m_Nodes.size()) &&
         "<SparseGraph::SetEdgeCost>: invalid index");
 
   //visit each neighbour and erase any edges leading to this node
@@ -816,7 +836,7 @@ bool SparseGraph<node_type, edge_type>::Load(std::ifstream& stream)
   {
     EdgeType NextEdge(stream);
 
-    m_Edges[NextEdge.From()].push_back(NextEdge);
+    AddEdge(NextEdge);
   }
 
   return true;

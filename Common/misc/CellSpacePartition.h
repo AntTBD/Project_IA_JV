@@ -231,7 +231,7 @@ inline int CellSpacePartition<entity>::PositionToIndex(const Vector2D& pos)const
 
   //if the entity's position is equal to vector2d(m_dSpaceWidth, m_dSpaceHeight)
   //then the index will overshoot. We need to check for this and adjust
-  if (idx > m_Cells.size()-1) idx = m_Cells.size()-1;
+  if (idx > (int)m_Cells.size()-1) idx = (int)m_Cells.size()-1;
 
   return idx;
 }

@@ -57,5 +57,24 @@ inline T GetValueFromStream(std::ifstream& stream)
   return val;
 }
 
+//--------------------------- WriteBitsToStream ------------------------------------
+//
+// writes the value as a binary string of bits
+//-----------------------------------------------------------------------------
+template <typename T>
+void WriteBitsToStream(std::ostream& stream, const T& val)
+{
+  int iNumBits = sizeof(T) * 8;
+
+  while (--iNumBits >= 0)
+  {
+    if ((iNumBits+1) % 8 == 0) stream << " ";
+    unsigned long mask = 1 << iNumBits;
+    if (val & mask) stream << "1";
+    else stream << "0";
+  }
+}
+
+
 
 #endif

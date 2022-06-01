@@ -81,7 +81,11 @@ T Maximum(const T& v1, const T& v2)
 //----------------------------------------------------------------------------
 
 //returns a random integer between x and y
-inline int   RandInt(int x,int y) {return rand()%(y-x+1)+x;}
+inline int   RandInt(int x,int y)
+{
+  assert(y>=x && "<RandInt>: y is less than x");
+  return rand()%(y-x+1)+x;
+}
 
 //returns a random double between zero and 1
 inline double RandFloat()      {return ((rand())/(RAND_MAX+1.0));}
@@ -94,7 +98,7 @@ inline double RandInRange(double x, double y)
 //returns a random bool
 inline bool   RandBool()
 {
-  if (RandInt(0,1)) return true;
+  if (RandFloat() > 0.5) return true;
 
   else return false;
 }
@@ -168,7 +172,7 @@ inline T MinOf(const T& a, const T& b)
 template <class T, class U, class V>
 inline void Clamp(T& arg, const U& minVal, const V& maxVal)
 {
-  assert ( (minVal < maxVal) && "<Clamp>MaxVal < MinVal!");
+  assert ( ((double)minVal < (double)maxVal) && "<Clamp>MaxVal < MinVal!");
 
   if (arg < (T)minVal)
   {
