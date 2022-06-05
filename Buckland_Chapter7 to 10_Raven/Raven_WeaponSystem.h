@@ -13,6 +13,7 @@
 //-----------------------------------------------------------------------------
 #include <map>
 #include "2d/vector2d.h"
+#include "Fuzzy/FuzzyModule.h"
 
 class Raven_Bot;
 class Raven_Weapon;
@@ -43,7 +44,7 @@ private:
   double            m_dReactionTime;
 
   //each time the current weapon is fired a certain amount of random noise is
-  //added to the the angle of the shot. This prevents the bots from hitting
+  //added to the angle of the shot. This prevents the bots from hitting
   //their opponents 100% of the time. The lower this value the more accurate
   //a bot's aim will be. Recommended values are between 0 and 0.2 (the value
   //represents the max deviation in radians that can be added to each shot).
@@ -53,6 +54,8 @@ private:
   //even if the target disappears from view.
   double            m_dAimPersistance;
 
+  FuzzyModule       m_FuzzyModule;
+
   //predicts where the target will be by the time it takes the current weapon's
   //projectile type to reach it. Used by TakeAimAndShoot
   Vector2D    PredictFuturePositionOfTarget()const;
@@ -60,6 +63,7 @@ private:
   //adds a random deviation to the firing angle not greater than m_dAimAccuracy 
   //rads
   void        AddNoiseToAim(Vector2D& AimingPos)const;
+  void        AddFuzzyAim(Vector2D& AimingPos);
 
 public:
 
@@ -72,11 +76,12 @@ public:
 
   //sets up the weapon map with just one weapon: the blaster
   void          Initialize();
+  void          InitializeFuzzyModule();
 
   //this method aims the bot's current weapon at the target (if there is a
   //target) and, if aimed correctly, fires a round. (Called each update-step
   //from Raven_Bot::Update)
-  void          TakeAimAndShoot()const;
+  void          TakeAimAndShoot();
 
   //this method determines the most appropriate weapon to use given the current
   //game state. (Called every n update-steps from Raven_Bot::Update)
