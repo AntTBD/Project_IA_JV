@@ -80,8 +80,8 @@ protected:
 public:
 
   Raven_Weapon(unsigned int TypeOfGun,
-               unsigned int DefaultNumRounds,
-               unsigned int MaxRoundsCarried,
+               unsigned int DefaultNumRounds, // Ammo default ammo nb
+               unsigned int MaxRoundsCarried, // Max ammo nb
                double        RateOfFire,
                double        IdealRange,
                double        ProjectileSpeed,

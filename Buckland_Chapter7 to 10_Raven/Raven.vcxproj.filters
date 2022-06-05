@@ -620,6 +620,7 @@
     <None Include="maps\Raven_DM1_Doors.map">
       <Filter>Resource Files\maps</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Script1.rc">

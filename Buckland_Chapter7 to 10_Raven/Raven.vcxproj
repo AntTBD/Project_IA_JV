@@ -649,6 +649,7 @@
     <ClInclude Include="..\Common\misc\WindowUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Params.lua" />
     <None Include="note.txt" />
     <None Include="maps\Raven_DM1.map" />
