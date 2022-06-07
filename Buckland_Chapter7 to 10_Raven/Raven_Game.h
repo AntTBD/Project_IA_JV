@@ -25,6 +25,7 @@
 #include "game/EntityFunctionTemplates.h"
 #include "Raven_Bot.h"
 #include "navigation/pathmanager.h"
+#include "Raven_Team.h"
 
 
 class BaseGameEntity;
@@ -55,6 +56,17 @@ private:
   //this class manages all the path planning requests
   PathManager<Raven_PathPlanner>*  m_pPathManager;
 
+  std::vector<Raven_Team*>           m_Teams;
+
+  // mode
+  enum class Mode {
+      DeathMatch,
+      Team,
+      BattleRoyal,
+      oneVSone
+  };
+    Mode                            m_Mode;
+
 
   //if true the game will be paused
   bool                             m_bPaused;
@@ -80,6 +92,8 @@ private:
   //must be notified so that they can remove any references to that bot from
   //their memory
   void NotifyAllBotsOfRemoval(Raven_Bot* pRemovedBot)const;
+
+  void SetTeams(int nbTeams);
   
 public:
   
@@ -94,6 +108,8 @@ public:
   bool LoadMap(const std::string& FileName); 
 
   void AddBots(unsigned int NumBotsToAdd);
+  void AddBotsTeam(unsigned int NumBotsToAdd);
+  void AddBot(Raven_Bot* rb);
   void AddRocket(Raven_Bot* shooter, Vector2D target);
   void AddRailGunSlug(Raven_Bot* shooter, Vector2D target);
   void AddShotGunPellet(Raven_Bot* shooter, Vector2D target);

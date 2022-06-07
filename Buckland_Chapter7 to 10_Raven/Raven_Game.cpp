@@ -25,6 +25,8 @@
 
 #include "goals/Goal_Think.h"
 #include "goals/Raven_Goal_Types.h"
+#include <Debug/DebugConsole.h>
+#include <misc/Stream_Utility_Functions.h>
 
 
 
@@ -41,8 +43,12 @@ Raven_Game::Raven_Game():m_pSelectedBot(NULL),
                          m_pPathManager(NULL),
                          m_pGraveMarkers(NULL)
 {
+   m_Mode = Mode::Team;
   //load in the default map
   LoadMap(script->GetString("StartMap"));
+
+
+
 }
 
 
@@ -153,7 +159,7 @@ void Raven_Game::Update()
     //an unoccupied spawn point
     if ((*curBot)->isSpawning() && bSpawnPossible)
     {
-      bSpawnPossible = AttemptToAddBot(*curBot);
+        bSpawnPossible = AttemptToAddBot(*curBot);
     }
     
     //if this bot's status is 'dead' add a grave at its current location 
@@ -184,7 +190,7 @@ void Raven_Game::Update()
     if (!m_Bots.empty())
     {
       Raven_Bot* pBot = m_Bots.back();
-      if (pBot == m_pSelectedBot)m_pSelectedBot=0;
+      if (pBot == m_pSelectedBot) m_pSelectedBot=0;
       NotifyAllBotsOfRemoval(pBot);
       delete m_Bots.back();
       m_Bots.remove(pBot);
@@ -201,19 +207,43 @@ void Raven_Game::Update()
 bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
 {
   //make sure there are some spawn points available
-  if (m_pMap->GetSpawnPoints().size() <= 0)
+  if(pBot->HasTeam())
+  {
+      if(pBot->GetTeam()->GetSpawnPoints().size() <= 0)
+      {
+          ErrorBox("Team has no spawn points!"); return false;
+      }
+  }
+  else if (m_pMap->GetSpawnPoints().size() <= 0)
   {
     ErrorBox("Map has no spawn points!"); return false;
   }
 
   //we'll make the same number of attempts to spawn a bot this update as
   //there are spawn points
-  int attempts = m_pMap->GetSpawnPoints().size();
+    int attempts;
+    if(pBot->HasTeam())
+    {
+        attempts = pBot->GetTeam()->GetSpawnPoints().size();
+    }
+    else
+    {
+        attempts = m_pMap->GetSpawnPoints().size();
+    }
 
   while (--attempts >= 0)
   { 
     //select a random spawn point
-    Vector2D pos = m_pMap->GetRandomSpawnPoint();
+    Vector2D pos;
+
+    if(pBot->HasTeam())
+    {
+        pos = pBot->GetTeam()->GetRandomSpawnPoint();
+    }
+    else
+    {
+        pos = m_pMap->GetRandomSpawnPoint();
+    }
 
     //check to see if it's occupied
     std::list<Raven_Bot*>::const_iterator curBot = m_Bots.begin();
@@ -244,14 +274,45 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
 //
 //  Adds a bot and switches on the default steering behavior
 //-----------------------------------------------------------------------------
-void Raven_Game::AddBots(unsigned int NumBotsToAdd)
-{ 
-  while (NumBotsToAdd--)
-  {
-    //create a bot. (its position is irrelevant at this point because it will
-    //not be rendered until it is spawned)
-    Raven_Bot* rb = new Raven_Bot(this, Vector2D());
+void Raven_Game::AddBots(unsigned int NumBotsToAdd) {
+    if(m_Mode == Mode::Team) {
+        AddBotsTeam(NumBotsToAdd);
+        return;
+    }
 
+    while (NumBotsToAdd--) {
+        //create a bot. (its position is irrelevant at this point because it will
+        //not be rendered until it is spawned)
+        Raven_Bot *rb = new Raven_Bot(this, Vector2D());
+
+        AddBot(rb);
+
+#ifdef LOG_CREATIONAL_STUFF
+        debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
+#endif
+    }
+}
+void Raven_Game::AddBotsTeam(unsigned int NumBotsToAdd) {
+    static int idTeam = 0;
+    while (NumBotsToAdd--) {
+        //create a bot. (its position is irrelevant at this point because it will
+        //not be rendered until it is spawned)
+        Raven_Bot *rb = new Raven_Bot(this, Vector2D());
+        m_Teams.at(idTeam)->AddMember(rb);
+        rb->SetTeam(m_Teams.at(idTeam));
+
+        AddBot(rb);
+
+#ifdef LOG_CREATIONAL_STUFF
+        debug_con << "Adding bot with ID " << ttos(rb->ID()) << " to team " << m_Teams.at(idTeam)->GetName() << "";
+#endif
+
+        // change team each time
+        idTeam = (idTeam + 1) % m_Teams.size();
+    }
+}
+void Raven_Game::AddBot(Raven_Bot* rb)
+{
     //switch the default steering behaviors on
     rb->GetSteering()->WallAvoidanceOn();
     rb->GetSteering()->SeparationOn();
@@ -260,14 +321,28 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd)
 
     //register the bot with the entity manager
     EntityMgr->RegisterEntity(rb);
-
-    
-#ifdef LOG_CREATIONAL_STUFF
-  debug_con << "Adding bot with ID " << ttos(rb->ID()) << "";
-#endif
-  }
 }
 
+void Raven_Game::SetTeams(int nbTeams){
+    m_Teams.clear();
+    for(int i = 0; i < nbTeams; i++){
+        m_Teams.push_back(new Raven_Team("Team " + std::to_string(i), Vector2D(300, 60)));
+    }
+
+    int nbSpawn = m_pMap->GetSpawnPoints().size();
+    int idTeam = 0;
+    while (nbSpawn--)
+    {
+        m_Teams.at(idTeam)->AddSpawnPoint(m_pMap->GetSpawnPoints().at(nbSpawn));
+
+#ifdef LOG_CREATIONAL_STUFF
+        debug_con << "Adding spawn point (" << m_pMap->GetSpawnPoints().at(nbSpawn).x << "," <<
+			m_pMap->GetSpawnPoints().at(nbSpawn).y << ") to team " << m_Teams.at(idTeam)->GetName() << "";
+#endif
+        // change team each time
+        idTeam = (idTeam + 1) % m_Teams.size();
+    }
+}
 //---------------------------- NotifyAllBotsOfRemoval -------------------------
 //
 //  when a bot is removed from the game by a user all remianing bots
@@ -395,8 +470,19 @@ bool Raven_Game::LoadMap(const std::string& filename)
 
   //load the new map data
   if (m_pMap->LoadMap(filename))
-  { 
-    AddBots(script->GetInt("NumBots"));
+  {
+      int NumBots = script->GetInt("NumBots");
+      switch (m_Mode) {
+      case Mode::Team:
+              SetTeams(2);
+              AddBotsTeam(NumBots);
+              break;
+
+              // TODO: Add more modes
+          default:
+              AddBots(NumBots);
+              break;
+      }
   
     return true;
   }

@@ -81,6 +81,8 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
                                         script->GetDouble("Bot_AimPersistance"));
 
   m_pSensoryMem = new Raven_SensoryMemory(this, script->GetDouble("Bot_MemorySpan"));
+
+  m_pTeam = NULL;
 }
 
 //-------------------------------- dtor ---------------------------------------
@@ -215,69 +217,84 @@ bool Raven_Bot::isReadyForTriggerUpdate()const
 
 //--------------------------- HandleMessage -----------------------------------
 //-----------------------------------------------------------------------------
-bool Raven_Bot::HandleMessage(const Telegram& msg)
-{
-  //first see if the current goal accepts the message
-  if (GetBrain()->HandleMessage(msg)) return true;
- 
-  //handle any messages not handles by the goals
-  switch(msg.Msg)
-  {
-  case Msg_TakeThatMF:
+bool Raven_Bot::HandleMessage(const Telegram& msg) {
+    //first see if the current goal accepts the message
+    if (GetBrain()->HandleMessage(msg)) return true;
 
-    //just return if already dead or spawning
-    if (isDead() || isSpawning()) return true;
+    //handle any messages not handles by the goals
+    switch (msg.Msg) {
+        case Msg_TakeThatMF:
 
-    //the extra info field of the telegram carries the amount of damage
-    ReduceHealth(DereferenceToType<int>(msg.ExtraInfo));
+            //just return if already dead or spawning
+            if (isDead() || isSpawning()) return true;
 
-    //if this bot is now dead let the shooter know
-    if (isDead())
-    {
-      Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
-                              ID(),
-                              msg.Sender,
-                              Msg_YouGotMeYouSOB,
-                              NO_ADDITIONAL_INFO);
+            //the extra info field of the telegram carries the amount of damage
+            ReduceHealth(DereferenceToType<int>(msg.ExtraInfo));
+
+            //if this bot is now dead let the shooter know
+            if (isDead()) {
+                Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
+                                        ID(),
+                                        msg.Sender,
+                                        Msg_YouGotMeYouSOB,
+                                        NO_ADDITIONAL_INFO);
+            }
+
+            return true;
+
+        case Msg_YouGotMeYouSOB:
+
+            IncrementScore();
+
+            // this bot has a team and shot down the team's target
+            if(this->HasTeam())
+            {
+                if(m_pTeam->IsTarget(msg.Sender)) m_pTeam->ClearTarget(ID());
+            }
+            //the bot this bot has just killed should be removed as the target
+            else if(this->HasTeam()) m_pTargSys->ClearTarget();
+
+            return true;
+
+        case Msg_GunshotSound:
+
+            //add the source of this sound to the bot's percepts
+            GetSensoryMem()->UpdateWithSoundSource((Raven_Bot *) msg.ExtraInfo);
+
+            return true;
+
+        case Msg_UserHasRemovedBot: {
+
+            Raven_Bot *pRemovedBot = (Raven_Bot *) msg.ExtraInfo;
+
+            GetSensoryMem()->RemoveBotFromMemory(pRemovedBot);
+
+            //if the removed bot is the target, make sure the target is cleared
+            if (pRemovedBot == GetTargetSys()->GetTarget()) {
+                GetTargetSys()->ClearTarget();
+            }
+
+            return true;
+        }
+
+        case Msg_NewTeamTarget: {
+            if(HasTeam()){
+                m_pTargSys->SetTarget(m_pTeam->GetTarget());
+            }
+            return true;
+        }
+
+        case Msg_TeamTargetDown: {
+            if(HasTeam()){
+                m_pTargSys->ClearTarget();
+            }
+            return true;
+        }
+
+
+        default:
+            return false;
     }
-
-    return true;
-
-  case Msg_YouGotMeYouSOB:
-    
-    IncrementScore();
-    
-    //the bot this bot has just killed should be removed as the target
-    m_pTargSys->ClearTarget();
-
-    return true;
-
-  case Msg_GunshotSound:
-
-    //add the source of this sound to the bot's percepts
-    GetSensoryMem()->UpdateWithSoundSource((Raven_Bot*)msg.ExtraInfo);
-
-    return true;
-
-  case Msg_UserHasRemovedBot:
-    {
-
-      Raven_Bot* pRemovedBot = (Raven_Bot*)msg.ExtraInfo;
-
-      GetSensoryMem()->RemoveBotFromMemory(pRemovedBot);
-
-      //if the removed bot is the target, make sure the target is cleared
-      if (pRemovedBot == GetTargetSys()->GetTarget())
-      {
-        GetTargetSys()->ClearTarget();
-      }
-
-      return true;
-    }
-
-
-  default: return false;
-  }
 }
 
 //------------------ RotateFacingTowardPosition -------------------------------
@@ -485,8 +502,12 @@ void Raven_Bot::Render()
 
 
   if (isDead() || isSpawning()) return;
-  
-  gdi->BluePen();
+
+    if (this->HasTeam()) {
+        gdi->SetPenColor(this->GetTeam()->ID() % NumColors);
+    } else {
+        gdi->BluePen();
+    }
   
   m_vecBotVBTrans = WorldTransform(m_vecBotVB,
                                    Pos(),
@@ -522,7 +543,7 @@ void Raven_Bot::Render()
 
   if (UserOptions->m_bShowBotIDs)
   {
-    gdi->TextAtPos(Pos().x -10, Pos().y-20, std::to_string(ID()));
+    gdi->TextAtPos(Pos().x -10, Pos().y-20, std::to_string(ID()) + (HasTeam() ? " " + m_pTeam->GetName() : ""));
   }
 
   if (UserOptions->m_bShowBotHealth)
