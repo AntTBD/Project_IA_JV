@@ -1,5 +1,5 @@
 #pragma warning (disable:4786)
-#include <windows.h>
+#include <windowsx.h>
 #include <time.h>
 #include "constants.h"
 #include "misc/utils.h"
@@ -12,22 +12,89 @@
 #include "Raven_Game.h"
 #include "lua/Raven_Scriptor.h"
 
-
 //need to include this for the toolbar stuff
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
 
+#define READY                       1
 
+// DEFAULT PARAMTERS FOR PARAMETERS DIALOG -----------------------------------------
+
+#define DEATH_MATCH_MAX_BOT         25
+#define DEATH_MATCH_MIN_BOT         0
+#define DEATH_MATCH_INIT_BOT        5
+
+#define TEAM_MATCH_MAX_BOT          10
+#define TEAM_MATCH_MIN_BOT          1
+#define TEAM_MATCH_INIT_BOT         5
+
+
+// LIST FOR DIALOG CONTROL ---------------------------------------------------------
+
+std::map<int, std::pair <const char*, Raven_Game::Mode>> MAP_GRP_BOXES_LIST
+{ 
+    {ID_GRPBOX_DEATHMATCH,      std::make_pair( "Death Match",   Raven_Game::Mode::DeathMatch   )},
+    {ID_GRPBOX_TEAMMATCH,       std::make_pair( "Team Match",    Raven_Game::Mode::Team         )},
+    {ID_GRPBOX_ONEVSONE,        std::make_pair( "1 VS 1",        Raven_Game::Mode::oneVSone     )},
+    {ID_GRPBOX_BATTLEROYALE,    std::make_pair( "Battle Royale", Raven_Game::Mode::BattleRoyale )},
+};
+
+const std::list<int> ID_GRPBOX_DEATHMATCH_ITEMS = {
+    ID_GRPBOX_DEATHMATCH,
+    ID_DEATHMATCH_TEXT_NB,
+    ID_DEATHMATCH_SPIN_TEXT,
+    ID_DEATHMATCH_SPIN,
+    ID_DEATHMATCH_SPIN_BOX,
+
+};
+
+const std::list<int> ID_GRPBOX_TEAMMATCH_ITEMS = {
+    ID_GRPBOX_TEAMMATCH,
+    ID_TEAM_TEXT_1,
+    ID_TEAM_TEXT_2,
+    ID_TEAM_SPIN_TEAM_1,
+    ID_TEAM_SPIN_TEAM_2,
+    ID_TEAM_SPIN_TEAM_1_TEXT,
+    ID_TEAM_SPIN_TEAM_2_TEXT,
+    ID_TEAM_SPIN_TEAM_1_BOX,
+    ID_TEAM_SPIN_TEAM_2_BOX
+};
+
+const std::list<int> ID_GRPBOX_ONEVSONE_ITEMS = {
+    ID_GRPBOX_ONEVSONE,
+
+};
+
+const std::list<int> ID_GRPBOX_BATTLEROYAL_ITEMS = {
+    ID_GRPBOX_BATTLEROYALE,
+
+};
 
 //--------------------------------- Globals ------------------------------
 //------------------------------------------------------------------------
 
+HINSTANCE hinstance;
+
 char* g_szApplicationName = "Raven";
-char*	g_szWindowClassName = "MyWindowClass";
+char* g_szWindowClassName = "MyWindowClass";
 
 
 Raven_Game* g_pRaven;
 
+Raven_Game::Mode match_mode = Raven_Game::Mode::DeathMatch;
+bool human_playing = false;
+
+// DEATHMATCH 
+int bot_number_deathmatch = DEATH_MATCH_INIT_BOT;
+
+// TEAM DEATH MATCH
+int bot_number_team_1 = TEAM_MATCH_INIT_BOT;
+int bot_number_team_2 = TEAM_MATCH_INIT_BOT;
+
+
+void RegisterModalDialogClass(HWND);
+BOOL CALLBACK DlgParamProc(HWND, UINT, WPARAM, LPARAM);
+Raven_Game* CreateGame();
 
 //---------------------------- WindowProc ---------------------------------
 //	
@@ -41,61 +108,80 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 {
  
    //these hold the dimensions of the client window area
-	 static int cxClient, cyClient; 
+   static int cxClient, cyClient; 
 
-	 //used to create the back buffer
+   //used to create the back buffer
    static HDC		hdcBackBuffer;
    static HBITMAP	hBitmap;
    static HBITMAP	hOldBitmap;
 
-      //to grab filenames
+   //to grab filenames
    static TCHAR   szFileName[MAX_PATH],
                   szTitleName[MAX_PATH];
 
 
     switch (msg)
     {
-	
 		//A WM_CREATE msg is sent when your application window is first
 		//created
     case WM_CREATE:
       {
-         //to get get the size of the client window first we need  to create
-         //a RECT and then ask Windows to fill in our RECT structure with
-         //the client window size. Then we assign to cxClient and cyClient 
-         //accordingly
-			   RECT rect;
+        hinstance = GetModuleHandle(NULL);
 
-			   GetClientRect(hwnd, &rect);
+        RegisterModalDialogClass(hwnd);
+        
+        while (g_pRaven == nullptr)
+        {
+            int dialog_message = DialogBox(hinstance, "PARAM_DIALOG", hwnd, DlgParamProc);
 
-			   cxClient = rect.right;
-			   cyClient = rect.bottom;
+            if (dialog_message == NULL)
+            {
+                PostQuitMessage(0);
+                break;
+            }
 
-         //seed random number generator
-         srand((unsigned) time(NULL));
+            //create the game
+            g_pRaven = CreateGame();
 
-         
-         //---------------create a surface to render to(backbuffer)
+            if (g_pRaven == nullptr)
+            {
+                MessageBox(hwnd, "An error occured with the game creation. Please Try Again.", "Unexpected Error", MB_ICONERROR);
+            }
+        }
 
-         //create a memory device context
-         hdcBackBuffer = CreateCompatibleDC(NULL);
+        //to get get the size of the client window first we need  to create
+        //a RECT and then ask Windows to fill in our RECT structure with
+        //the client window size. Then we assign to cxClient and cyClient 
+        //accordingly
+        RECT rect;
 
-         //get the DC for the front buffer
-         HDC hdc = GetDC(hwnd);
+        GetClientRect(hwnd, &rect);
 
-         hBitmap = CreateCompatibleBitmap(hdc,
-                                          cxClient,
-                                          cyClient);
+        cxClient = rect.right;
+        cyClient = rect.bottom;
 
-			  
-         //select the bitmap into the memory device context
-			   hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
+        //seed random number generator
+        srand((unsigned)time(NULL));
 
-         //don't forget to release the DC
-         ReleaseDC(hwnd, hdc);  
-              
-         //create the game
-         g_pRaven = new Raven_Game();
+
+        //---------------create a surface to render to(backbuffer)
+
+        //create a memory device context
+        hdcBackBuffer = CreateCompatibleDC(NULL);
+
+        //get the DC for the front buffer
+        HDC hdc = GetDC(hwnd);
+
+        hBitmap = CreateCompatibleBitmap(hdc,
+            cxClient,
+            cyClient);
+
+
+        //select the bitmap into the memory device context
+        hOldBitmap = (HBITMAP)SelectObject(hdcBackBuffer, hBitmap);
+
+        //don't forget to release the DC
+        ReleaseDC(hwnd, hdc);
 
         //make sure the menu items are ticked/unticked accordingly
         CheckMenuItemAppropriately(hwnd, IDM_NAVIGATION_SHOW_NAVGRAPH, UserOptions->m_bShowGraph);
@@ -174,22 +260,19 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
         }
       }
-
-      break;
+    break;
 
 
     case WM_LBUTTONDOWN:
     {
       g_pRaven->ClickLeftMouseButton(MAKEPOINTS(lParam));
     }
-    
     break;
 
    case WM_RBUTTONDOWN:
     {
       g_pRaven->ClickRightMouseButton(MAKEPOINTS(lParam));
     }
-    
     break;
 
     case WM_COMMAND:
@@ -333,7 +416,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
       }//end switch
     }
-
+    break;
     
     case WM_PAINT:
       {
@@ -356,18 +439,18 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          
          gdi->StartDrawing(hdcBackBuffer);
 
-         g_pRaven->Render();
+         if (g_pRaven != NULL)
+             g_pRaven->Render();
 
          gdi->StopDrawing(hdcBackBuffer);
 
 
          //now blit backbuffer to front
-			   BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY); 
+		 BitBlt(ps.hdc, 0, 0, cxClient, cyClient, hdcBackBuffer, 0, 0, SRCCOPY); 
           
          EndPaint (hwnd, &ps);
 
       }
-
       break;
 
     //has the user resized the client area?
@@ -380,23 +463,23 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
         //now to resize the backbuffer accordingly. First select
         //the old bitmap back into the DC
-			  SelectObject(hdcBackBuffer, hOldBitmap);
+		SelectObject(hdcBackBuffer, hOldBitmap);
 
         //don't forget to do this or you will get resource leaks
         DeleteObject(hBitmap); 
 
-			  //get the DC for the application
+		//get the DC for the application
         HDC hdc = GetDC(hwnd);
 
-			  //create another bitmap of the same size and mode
+		//create another bitmap of the same size and mode
         //as the application
         hBitmap = CreateCompatibleBitmap(hdc,
 											  cxClient,
 											  cyClient);
 
-			  ReleaseDC(hwnd, hdc);
+		ReleaseDC(hwnd, hdc);
 			  
-			  //select the new bitmap into the DC
+		//select the new bitmap into the DC
         SelectObject(hdcBackBuffer, hBitmap);
 
       }
@@ -404,7 +487,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
       break;
           
 		 case WM_DESTROY:
-			 {
+	     {
 
          //clean up our backbuffer objects
          SelectObject(hdcBackBuffer, hOldBitmap);
@@ -415,17 +498,239 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
          // kill the application, this sends a WM_QUIT message  
 				 PostQuitMessage (0);
-			 }
+		 }
 
        break;
 
      }//end switch
 
      //this is where all the messages not specifically handled by our 
-		 //winproc are sent to be processed
-		 return DefWindowProc (hwnd, msg, wParam, lParam);
+     //winproc are sent to be processed
+	 return DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+Raven_Game* CreateGame()
+{
+    Raven_Game* game;
+
+    switch (match_mode)
+    {
+    case Raven_Game::Mode::DeathMatch:
+        // Create Death match game
+        game = new Raven_Game();
+        break;
+    
+    case Raven_Game::Mode::Team:
+        game = nullptr;
+        break;
+
+    case Raven_Game::Mode::BattleRoyale:
+        game = nullptr;
+        break;
+
+    case Raven_Game::Mode::oneVSone:
+        game = nullptr;
+        break;
+
+    default:
+        return nullptr;
+    }
+
+    return game;
+}
+
+//-------------------------------- Utils --------------------------------------
+
+void RegisterModalDialogClass(HWND hwnd) {
+    WNDCLASSEX wc = { 0 };
+    wc.cbSize = sizeof(WNDCLASSEXW);
+    wc.lpfnWndProc = (WNDPROC)DlgParamProc;
+    wc.hInstance = hinstance;
+    wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+    wc.lpszClassName = TEXT("DialogClass");
+    RegisterClassEx(&wc);
+}
+
+int EnableGroupItemsWithGroupID(HWND hwndDlg, int ID, bool enable)
+{
+    std::list<int> list;
+
+    switch (ID)
+    {
+    case ID_GRPBOX_DEATHMATCH:
+        list = ID_GRPBOX_DEATHMATCH_ITEMS;
+        break;
+    case ID_GRPBOX_TEAMMATCH:
+        list = ID_GRPBOX_TEAMMATCH_ITEMS;
+        break;
+    case ID_GRPBOX_ONEVSONE:
+        list = ID_GRPBOX_ONEVSONE_ITEMS;
+        break;
+    case ID_GRPBOX_BATTLEROYALE:
+        list = ID_GRPBOX_BATTLEROYAL_ITEMS;
+        break;
+    default:
+        return NULL;
+    }
+
+    std::list<int>::const_iterator it;
+    for (it = list.begin(); it != list.end(); ++it) {
+        EnableWindow(GetDlgItem(hwndDlg, *it), enable);
+    }
+
+    return 1;
+}
+
+void EnableMatchModeWithID(HWND hwndDlg, int ID_MATCH)
+{
+    std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it;
+
+    for (it = MAP_GRP_BOXES_LIST.begin(); it != MAP_GRP_BOXES_LIST.end(); ++it) {
+        int c_id = it->first;
+
+        if (ID_MATCH == c_id)
+        {
+            EnableGroupItemsWithGroupID(hwndDlg, c_id, true);
+        }
+        else
+        {
+            EnableGroupItemsWithGroupID(hwndDlg, c_id, false);
+        }
+    }
+}
+
+//------------------------------- PARAM DIALOG --------------------------------
+
+BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    HWND static mainwnd = GetParent(hwndDlg);
+    TCHAR* words = TEXT("A simple demonstration of a modal dialog window.");
+    HWND static staticbox;
+
+    switch (message)
+    {
+    case WM_INITDIALOG:
+    {
+        staticbox = GetDlgItem(hwndDlg, 1);
+        SetWindowText(staticbox, words);
+        
+        std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it;
+
+        for (it = MAP_GRP_BOXES_LIST.begin(); it != MAP_GRP_BOXES_LIST.end(); ++it) 
+        {
+            SendDlgItemMessage(hwndDlg, ID_MATCH_TYPE, CB_ADDSTRING, 0, (LONG)it->second.first);
+        }
+        SendDlgItemMessage(hwndDlg, ID_MATCH_TYPE, CB_SETCURSEL, 0, 0);
+        
+        SendDlgItemMessage(hwndDlg, ID_DEATHMATCH_SPIN, UDM_SETRANGE, 0, MAKELPARAM(DEATH_MATCH_MAX_BOT, DEATH_MATCH_MIN_BOT));
+        SendDlgItemMessage(hwndDlg, ID_DEATHMATCH_SPIN, UDM_SETPOS, 0, DEATH_MATCH_INIT_BOT);
+
+        SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_1, UDM_SETRANGE, 0, MAKELPARAM(TEAM_MATCH_MAX_BOT, TEAM_MATCH_MIN_BOT));
+        SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_1, UDM_SETPOS, 0, TEAM_MATCH_INIT_BOT);
+
+        SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETRANGE, 0, MAKELPARAM(TEAM_MATCH_MAX_BOT, TEAM_MATCH_MIN_BOT));
+        SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETPOS, 0, TEAM_MATCH_INIT_BOT);
+
+        EnableMatchModeWithID(hwndDlg, ID_GRPBOX_DEATHMATCH);
+
+        return TRUE;
+    }
+    case WM_COMMAND:
+        switch (HIWORD(wParam))
+        {
+            case CBN_SELCHANGE:
+            {
+                int selection = SendMessage(
+                    GetDlgItem(hwndDlg, ID_MATCH_TYPE),
+                    CB_GETCURSEL, NULL, NULL
+                );
+
+                // Get key with nb
+
+                std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it = MAP_GRP_BOXES_LIST.begin();
+
+                for (int i = 0; i < selection; i++)
+                {
+                    it++;
+                }
+                EnableMatchModeWithID(hwndDlg, it->first);
+
+                match_mode = it->second.second;
+
+            }
+            break;
+
+            case BN_CLICKED:
+            {
+                // Human checkbox 
+                if (LOWORD(wParam) == ID_HUMAN_CHECK) {
+                    human_playing = SendMessage(
+                        GetDlgItem(hwndDlg, ID_HUMAN_CHECK),
+                        BM_GETCHECK, NULL, NULL
+                    ); 
+                }
+
+                // Start button pressed
+                if (LOWORD(wParam) == ID_START_BUTTON) {
+                    
+                    int mode_selected = SendMessage(
+                        GetDlgItem(hwndDlg, ID_MATCH_TYPE),
+                        CB_GETCURSEL, NULL, NULL
+                    );
+                    
+                    EndDialog(hwndDlg, READY);
+                }
+            }
+            break;
+
+            default:
+                break;
+        }
+        break;
+
+    case WM_NOTIFY:
+        switch (wParam)
+        {
+        case ID_DEATHMATCH_SPIN:
+        {
+            bot_number_deathmatch = SendMessage(
+                GetDlgItem(hwndDlg, ID_DEATHMATCH_SPIN),
+                UDM_GETPOS, NULL, NULL
+            );
+        }
+        break;
+
+        case ID_TEAM_SPIN_TEAM_1:
+        {
+            bot_number_team_1 = SendMessage(
+                GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_1),
+                UDM_GETPOS, NULL, NULL
+            );
+        }
+        break;
+
+        case ID_TEAM_SPIN_TEAM_2:
+        {
+            bot_number_team_2 = SendMessage(
+                GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_2),
+                UDM_GETPOS, NULL, NULL
+            );
+        }
+        break;
+
+        default:
+            break;
+        }
+            
+        return TRUE;
+
+    case WM_CLOSE:
+        EndDialog(hwndDlg, NULL);//destroy dialog window
+        return FALSE;
+        break;
+    }
+    return 0;
+}
 
 //-------------------------------- WinMain -------------------------------
 //
@@ -444,8 +749,8 @@ int WINAPI WinMain (HINSTANCE hInstance,
 	WNDCLASSEX     winclass;
 
   // first fill in the window class stucture
-	winclass.cbSize        = sizeof(WNDCLASSEX);
-	winclass.style         = CS_HREDRAW | CS_VREDRAW;
+  winclass.cbSize        = sizeof(WNDCLASSEX);
+  winclass.style         = CS_HREDRAW | CS_VREDRAW;
   winclass.lpfnWndProc   = WindowProc;
   winclass.cbClsExtra    = 0;
   winclass.cbWndExtra    = 0;
@@ -455,14 +760,14 @@ int WINAPI WinMain (HINSTANCE hInstance,
   winclass.hbrBackground = NULL;
   winclass.lpszMenuName  = MAKEINTRESOURCE(IDR_MENU1);
   winclass.lpszClassName = g_szWindowClassName;
-	winclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+  winclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
 
   //register the window class
   if (!RegisterClassEx(&winclass))
   {
-		MessageBox(NULL, "Registration Failed!", "Error", 0);
+		MessageBox(NULL, "Registration Failed!", "Error", MB_ICONERROR);
 
-	  //exit the application
+	    //exit the application
 		return 0;
   }
 		
@@ -483,10 +788,12 @@ int WINAPI WinMain (HINSTANCE hInstance,
                             hInstance,            // program instance handle
                             NULL);                // creation parameters
 
+
      //make sure the window creation has gone OK
      if(!hWnd)
      {
-       MessageBox(NULL, "CreateWindowEx Failed!", "Error!", 0);
+       MessageBox(NULL, "CreateWindowEx Failed!", "Error!", MB_ICONERROR);
+       PostQuitMessage(0);
      }
 
      
@@ -549,5 +856,3 @@ int WINAPI WinMain (HINSTANCE hInstance,
  delete g_pRaven;
  return msg.wParam;
 }
-
-
