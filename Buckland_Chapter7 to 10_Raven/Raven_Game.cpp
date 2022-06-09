@@ -192,6 +192,7 @@ void Raven_Game::Update()
       Raven_Bot* pBot = m_Bots.back();
       if (pBot == m_pSelectedBot) m_pSelectedBot=0;
       NotifyAllBotsOfRemoval(pBot);
+      if(pBot->HasTeam()) pBot->GetTeam()->RemoveMember(pBot);
       delete m_Bots.back();
       m_Bots.remove(pBot);
       pBot = 0;
@@ -326,7 +327,7 @@ void Raven_Game::AddBot(Raven_Bot* rb)
 void Raven_Game::SetTeams(int nbTeams){
     m_Teams.clear();
     for(int i = 0; i < nbTeams; i++){
-        m_Teams.push_back(new Raven_Team("Team " + std::to_string(i), Vector2D(300, 60)));
+        m_Teams.push_back(new Raven_Team("Team " + std::to_string(i), m_pMap->GetRandomNodeLocationWithIndex()));
     }
 
     int nbSpawn = m_pMap->GetSpawnPoints().size();

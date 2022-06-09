@@ -24,6 +24,8 @@
 #include "Graph/GraphNodeTypes.h"
 #include "misc/CellSpacePartition.h"
 #include "triggers/TriggerSystem.h"
+#include "Raven_Team.h"
+#include "armory/Raven_Weapon.h"
 
 class BaseGameEntity;
 class Raven_Door;
@@ -107,9 +109,10 @@ public:
 
   //returns the position of a graph node selected at random
   Vector2D GetRandomNodeLocation()const;
-  
-  
-  void  UpdateTriggerSystem(std::list<Raven_Bot*>& bots);
+  std::pair<Vector2D,int> GetRandomNodeLocationWithIndex()const;
+
+
+    void  UpdateTriggerSystem(std::list<Raven_Bot*>& bots);
 
   const Raven_Map::TriggerSystem::TriggerList&  GetTriggers()const{return m_TriggerSystem.GetTriggers();}
   const std::vector<Wall2D*>&        GetWalls()const{return m_Walls;}
@@ -122,6 +125,9 @@ public:
   int                                GetSizeY()const{return m_iSizeY;}
   int                                GetMaxDimension()const{return Maximum(m_iSizeX, m_iSizeY);}
   double                             GetCellSpaceNeighborhoodRange()const{return m_dCellSpaceNeighborhoodRange;}
+
+
+  void AddWeaponTeamLoot(Raven_Team* team, Raven_Weapon* weapon, Raven_Game* world);
 
 };
 

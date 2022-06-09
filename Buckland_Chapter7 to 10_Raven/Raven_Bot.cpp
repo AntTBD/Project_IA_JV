@@ -10,6 +10,7 @@
 #include "Raven_UserOptions.h"
 #include "time/Regulator.h"
 #include "Raven_WeaponSystem.h"
+#include "armory/Raven_Weapon.h"
 #include "Raven_SensoryMemory.h"
 
 #include "Messaging/Telegram.h"
@@ -225,6 +226,7 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
     switch (msg.Msg) {
         case Msg_TakeThatMF:
 
+
             //just return if already dead or spawning
             if (isDead() || isSpawning()) return true;
 
@@ -238,7 +240,14 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
                                         msg.Sender,
                                         Msg_YouGotMeYouSOB,
                                         NO_ADDITIONAL_INFO);
+
+                if (HasTeam()) {
+                    for (Raven_Weapon* weapon : GetWeaponSys()->GetWeaponInventory()) {
+                        m_pWorld->GetMap()->AddWeaponTeamLoot(GetTeam(), weapon, m_pWorld);
+                    }
+                }
             }
+            
 
             return true;
 
@@ -250,6 +259,7 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
             if(this->HasTeam())
             {
                 if(m_pTeam->IsTarget(msg.Sender)) m_pTeam->ClearTarget(ID());
+
             }
             //the bot this bot has just killed should be removed as the target
             else if(this->HasTeam()) m_pTargSys->ClearTarget();

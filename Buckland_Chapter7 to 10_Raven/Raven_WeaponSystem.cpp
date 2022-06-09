@@ -431,3 +431,16 @@ void Raven_WeaponSystem::RenderDesirabilities()const
       }
     }
 }
+
+// get weapon inventory
+std::vector<Raven_Weapon*> Raven_WeaponSystem::GetWeaponInventory() const{
+    std::vector<Raven_Weapon*> weapons;
+    for (auto& weapon : m_WeaponMap)
+    {
+        if (weapon.second)
+        {
+            weapons.push_back(weapon.second);
+        }
+    }
+    return weapons;
+}

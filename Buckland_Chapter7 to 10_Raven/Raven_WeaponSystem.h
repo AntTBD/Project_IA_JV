@@ -113,6 +113,10 @@ public:
 
   void          RenderCurrentWeapon()const;
   void          RenderDesirabilities()const;
+
+  // get weapon inventory
+  std::vector<Raven_Weapon*> GetWeaponInventory() const;
+
 };
 
 #endif

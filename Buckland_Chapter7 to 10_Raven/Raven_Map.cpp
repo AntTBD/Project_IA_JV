@@ -11,6 +11,7 @@
 #include "triggers/Trigger_WeaponGiver.h"
 #include "triggers/Trigger_OnButtonSendMsg.h"
 #include "triggers/Trigger_SoundNotify.h"
+#include "triggers/Trigger_WeaponTeamLoot.h"
 
 #include "Raven_UserOptions.h"
 
@@ -161,6 +162,23 @@ void Raven_Map::AddWeapon_Giver(int type_of_weapon, std::ifstream& in)
 
   //register the entity 
   EntityMgr->RegisterEntity(wg);
+}
+
+//----------------------- AddWeaponTeamLoot ----------------------------------
+//-----------------------------------------------------------------------------
+void Raven_Map::AddWeaponTeamLoot(Raven_Team* team, Raven_Weapon* weapon, Raven_Game* world){
+    Trigger_WeaponTeamLoot* wtl = new Trigger_WeaponTeamLoot(team->GetLootPoint(), team, weapon, world,team->GetLootPointNodeId()); // TODO : change 0
+
+    //add it to the appropriate vectors
+    m_TriggerSystem.Register(wtl);
+
+    //let the corresponding navgraph node point to this object
+    NavGraph::NodeType& node = m_pNavGraph->GetNode(wtl->GraphNodeIndex());
+
+    node.SetExtraInfo(wtl);
+
+    //register the entity
+    EntityMgr->RegisterEntity(wtl);
 }
 
 
@@ -372,6 +390,19 @@ Vector2D Raven_Map::GetRandomNodeLocation()const
   }
 
   return pN->Pos();
+}
+
+std::pair<Vector2D,int> Raven_Map::GetRandomNodeLocationWithIndex()const
+{
+    NavGraph::ConstNodeIterator NodeItr(*m_pNavGraph);
+    int RandIndex = RandInt(0, m_pNavGraph->NumActiveNodes()-1);
+    const NavGraph::NodeType* pN = NodeItr.begin();
+    while (--RandIndex > 0)
+    {
+        pN = NodeItr.next();
+    }
+
+    return std::make_pair( pN->Pos(), pN->Index() );
 }
 
 

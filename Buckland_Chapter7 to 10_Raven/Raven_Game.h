@@ -37,6 +37,15 @@ class GraveMarkers;
 
 class Raven_Game
 {
+public:
+    // mode
+    enum class Mode {
+        DeathMatch,
+        Team,
+        BattleRoyale,
+        oneVSone
+    };
+
 private:
 
   //the current game map
@@ -59,12 +68,6 @@ private:
   std::vector<Raven_Team*>           m_Teams;
 
   // mode
-  enum class Mode {
-      DeathMatch,
-      Team,
-      BattleRoyal,
-      oneVSone
-  };
     Mode                            m_Mode;
 
 
@@ -178,7 +181,10 @@ public:
 
   
   void  TagRaven_BotsWithinViewRange(BaseGameEntity* pRaven_Bot, double range)
-              {TagNeighbors(pRaven_Bot, m_Bots, range);}  
+              {TagNeighbors(pRaven_Bot, m_Bots, range);}
+
+
+  Mode GetMode()const{return m_Mode;}
 };
 
 

@@ -111,12 +111,17 @@ private:
   HBRUSH  m_GreenBrush;
   HBRUSH  m_BlueBrush;
   HBRUSH  m_GreyBrush;
+  HBRUSH  m_PinkBrush;
   HBRUSH  m_BrownBrush;
   HBRUSH  m_YellowBrush;
   HBRUSH  m_OrangeBrush;
+  HBRUSH  m_PurpleBrush;
+
 
   HBRUSH  m_LightBlueBrush;
   HBRUSH  m_DarkGreenBrush;
+  HBRUSH  m_LightGreyBrush;
+  HBRUSH  m_LightPinkBrush;
 
   HDC    m_hdc;
 
@@ -163,12 +168,15 @@ public:
   void RedBrush()  {if(m_hdc)SelectObject(m_hdc, m_RedBrush);}
   void BlueBrush()  {if(m_hdc)SelectObject(m_hdc, m_BlueBrush);}
   void GreyBrush()  {if(m_hdc)SelectObject(m_hdc, m_GreyBrush);}
+  void PinkBrush() {if(m_hdc)SelectObject(m_hdc, m_PinkBrush);}
   void BrownBrush() {if(m_hdc)SelectObject(m_hdc, m_BrownBrush);}
   void YellowBrush() {if(m_hdc)SelectObject(m_hdc, m_YellowBrush);}
   void LightBlueBrush() {if(m_hdc)SelectObject(m_hdc, m_LightBlueBrush);}
+  void LightGreyBrush() {if(m_hdc)SelectObject(m_hdc, m_LightGreyBrush);}
+  void LightPinkBrush() {if(m_hdc)SelectObject(m_hdc, m_LightPinkBrush);}
   void DarkGreenBrush() {if(m_hdc)SelectObject(m_hdc, m_DarkGreenBrush);}
   void OrangeBrush() {if(m_hdc)SelectObject(m_hdc, m_OrangeBrush);}
-
+  void PurpleBrush() {if(m_hdc)SelectObject(m_hdc, m_PurpleBrush);}
 
 
   //ALWAYS call this before drawing
@@ -385,6 +393,29 @@ public:
     case light_pink: LightPinkPen(); return;
     }//end switch
   }
+    void SetBrushColor(int color)
+    {
+        assert (color < NumColors);
+
+        switch (color)
+        {
+            case black:BlackBrush(); return;
+
+            case white:WhiteBrush(); return;
+            case red: RedBrush(); return;
+            case green: GreenBrush(); return;
+            case blue: BlueBrush(); return;
+            case pink: PinkBrush(); return;
+            case grey: GreyBrush(); return;
+            case yellow: YellowBrush(); return;
+            case orange: OrangeBrush(); return;
+            case purple: PurpleBrush(); return;
+            case brown: BrownBrush(); return;
+            case light_blue: LightBlueBrush(); return;
+            case light_grey: LightGreyBrush(); return;//
+            case light_pink: LightPinkBrush(); return;//
+        }//end switch
+    }
 };
 
 #endif

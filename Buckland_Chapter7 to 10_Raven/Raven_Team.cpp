@@ -6,7 +6,7 @@
 
 int Raven_Team::Raven_Team_NextTeamID = 0;
 
-Raven_Team::Raven_Team(std::string name, Vector2D lootPoint){
+Raven_Team::Raven_Team(std::string name, std::pair<Vector2D,int> lootPoint){
     m_name = name;
     m_lootPoint = lootPoint;
     m_spawnPoints = std::vector<Vector2D>();
@@ -87,7 +87,10 @@ bool Raven_Team::IsTarget(int id){
 }
 
 Vector2D Raven_Team::GetLootPoint(){
-    return m_lootPoint;
+    return m_lootPoint.first;
+}
+int Raven_Team::GetLootPointNodeId() {
+    return m_lootPoint.second;
 }
 
 void Raven_Team::AddSpawnPoint(Vector2D point){

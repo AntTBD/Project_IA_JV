@@ -2,6 +2,7 @@
 #define RAVEN_TEAM_H
 
 #include <vector>
+#include <tuple>
 #include <iosfwd>
 #include <map>
 #include <list>
@@ -11,6 +12,7 @@
 #include "Raven_TargetingSystem.h"
 
 class Raven_Bot;
+class Trigger_WeaponsTeamLoot;
 
 
 
@@ -23,14 +25,14 @@ private:
     Raven_Bot* m_leader;
     Raven_Bot* m_target;
 
-    Vector2D m_lootPoint;
+    std::pair<Vector2D,int> m_lootPoint;
     std::vector<Vector2D> m_spawnPoints;
 
     bool IsMember(Raven_Bot *bot);
 public:
 
 
-    Raven_Team(std::string name, Vector2D lootPoint);
+    Raven_Team(std::string name, std::pair<Vector2D,int> lootPoint);
     ~Raven_Team();
 
     void AddMember(Raven_Bot* bot);
@@ -47,6 +49,7 @@ public:
     bool IsTarget(int id);
 
     Vector2D GetLootPoint();
+    int GetLootPointNodeId();
 
     void AddSpawnPoint(Vector2D point);
     const std::vector<Vector2D>& GetSpawnPoints() const;
