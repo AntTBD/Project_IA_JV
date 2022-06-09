@@ -352,7 +352,9 @@ bool Raven_Bot::RotateFacingTowardPosition(Vector2D target)
   return false;
 }
 
-
+void Raven_Bot::SetPerp() {
+    m_vSide = m_vFacing.Perp();
+}
 
 
 //--------------------------------- ReduceHealth ----------------------------

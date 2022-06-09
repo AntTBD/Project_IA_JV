@@ -491,6 +491,25 @@ bool Raven_Game::LoadMap(const std::string& filename)
   return false;
 }
 
+void Raven_Game::HandleKeyDown(WPARAM wparam){
+    switch(wparam) {
+        case 'W':
+            GetPlayerKey(m_pSelectedBot->Facing());
+            break;
+        case 'A':
+            m_pSelectedBot->SetPerp();
+            GetPlayerKey(m_pSelectedBot->Side()*-1);
+            break;
+        case 'S':
+            GetPlayerKey(m_pSelectedBot->Facing() * -1);
+            break;
+        case 'D':
+            m_pSelectedBot->SetPerp();
+            GetPlayerKey(m_pSelectedBot->Side());
+            break;
+    }
+}
+
 
 //------------------------- ExorciseAnyPossessedBot ---------------------------
 //
@@ -580,6 +599,23 @@ void Raven_Game::GetPlayerInput()const
   {
       m_pSelectedBot->RotateFacingTowardPosition(GetClientCursorPosition());
    }
+}
+
+//------------------------ GetPlayerInput -------------------------------------
+//
+//  if a bot is possessed the keyboard is polled for user input and any
+//  relevant bot methods are called appropriately
+//-----------------------------------------------------------------------------
+void Raven_Game::GetPlayerKey(Vector2D direction)const
+{
+    if (m_pSelectedBot && m_pSelectedBot->isPossessed())
+    {
+        //clear any current goals
+        m_pSelectedBot->GetBrain()->RemoveAllSubgoals();
+
+
+        m_pSelectedBot->GetBrain()->AddGoal_MoveToPosition(m_pSelectedBot->Pos() + direction);
+    }
 }
 
 

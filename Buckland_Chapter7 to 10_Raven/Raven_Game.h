@@ -163,12 +163,15 @@ public:
   //is a possessed bot, this fires the weapon, else does nothing
   void        ClickLeftMouseButton(POINTS p);
 
+  void        HandleKeyDown(WPARAM wparam);
+
   //when called will release any possessed bot from user control
   void        ExorciseAnyPossessedBot();
  
   //if a bot is possessed the keyboard is polled for user input and any 
   //relevant bot methods are called appropriately
   void        GetPlayerInput()const;
+  void        GetPlayerKey(Vector2D direction)const;
   Raven_Bot*  PossessedBot()const{return m_pSelectedBot;}
   void        ChangeWeaponOfPossessedBot(unsigned int weapon)const;
 

@@ -114,7 +114,13 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
       }
 
       break;
+    case WM_KEYDOWN:
+    {
 
+        g_pRaven->HandleKeyDown(wParam);
+
+    }
+    break;
     case WM_KEYUP:
       {
         switch(wParam)

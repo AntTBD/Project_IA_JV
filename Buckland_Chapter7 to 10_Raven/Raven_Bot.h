@@ -94,6 +94,9 @@ private:
     //points in the direction of the bot's movement
     Vector2D m_vFacing;
 
+    //a vector perpendicular to the Facing vector
+    Vector2D    m_vSide;
+
     //a bot only perceives other bots within this field of view
     double m_dFieldOfView;
 
@@ -150,6 +153,8 @@ public:
     //position. Returns false if not facing at the target.
     bool RotateFacingTowardPosition(Vector2D target);
 
+    void SetPerp();
+
     //methods for accessing attribute data
     int Health() const { return m_iHealth; }
     int MaxHealth() const { return m_iMaxHealth; }
@@ -161,6 +166,7 @@ public:
     void IncrementScore() { ++m_iScore; }
 
     Vector2D Facing() const { return m_vFacing; }
+    Vector2D Side() const { return m_vSide; }
 
     double FieldOfView() const { return m_dFieldOfView; }
 
