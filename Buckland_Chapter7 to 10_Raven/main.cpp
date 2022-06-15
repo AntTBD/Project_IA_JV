@@ -74,8 +74,9 @@ const std::list<int> ID_GRPBOX_BATTLEROYAL_ITEMS = {
 //------------------------------------------------------------------------
 
 HINSTANCE hinstance;
+HWND static mainwnd;
 
-char* g_szApplicationName = "Raven";
+char* g_szApplicationName = "Raven - ";
 char* g_szWindowClassName = "MyWindowClass";
 
 
@@ -93,7 +94,9 @@ int bot_number_team_2 = TEAM_MATCH_INIT_BOT;
 
 
 void RegisterModalDialogClass(HWND);
+void SwitchMatchMode(HWND hwndDlg, std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it);
 BOOL CALLBACK DlgParamProc(HWND, UINT, WPARAM, LPARAM);
+void OpenDialog(HWND);
 Raven_Game* CreateGame();
 
 //---------------------------- WindowProc ---------------------------------
@@ -130,24 +133,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
         RegisterModalDialogClass(hwnd);
         
-        while (g_pRaven == nullptr)
-        {
-            int dialog_message = DialogBox(hinstance, "PARAM_DIALOG", hwnd, DlgParamProc);
-
-            if (dialog_message == NULL)
-            {
-                PostQuitMessage(0);
-                break;
-            }
-
-            //create the game
-            g_pRaven = CreateGame();
-
-            if (g_pRaven == nullptr)
-            {
-                MessageBox(hwnd, "An error occured with the game creation. Please Try Again.", "Unexpected Error", MB_ICONERROR);
-            }
-        }
+        OpenDialog(hwnd);
 
         //to get get the size of the client window first we need  to create
         //a RECT and then ask Windows to fill in our RECT structure with
@@ -213,7 +199,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
         {
          case VK_ESCAPE:
           {
-            SendMessage(hwnd, WM_DESTROY, NULL, NULL);
+             OpenDialog(hwnd);
           }
           
           break;
@@ -314,9 +300,19 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
           break;
 
       case IDM_GAME_PAUSE:
-          
+
           g_pRaven->TogglePause();
 
+          break;
+
+      case IDM_GAME_MAIN_MENU:
+
+          OpenDialog(hwnd);
+
+          break;
+
+      case IDM_GAME_QUIT:
+          PostQuitMessage(0);
           break;
 
 
@@ -519,28 +515,13 @@ Raven_Game* CreateGame()
 {
     Raven_Game* game;
 
-    switch (match_mode)
-    {
-    case Raven_Game::Mode::DeathMatch:
-        // Create Death match game
-        game = new Raven_Game();
-        break;
-    
-    case Raven_Game::Mode::Team:
-        game = nullptr;
-        break;
-
-    case Raven_Game::Mode::BattleRoyale:
-        game = nullptr;
-        break;
-
-    case Raven_Game::Mode::oneVSone:
-        game = nullptr;
-        break;
-
-    default:
-        return nullptr;
-    }
+    game = new Raven_Game(
+        bot_number_deathmatch,
+        bot_number_team_1,
+        bot_number_team_2,
+        match_mode,
+        human_playing
+    );
 
     return game;
 }
@@ -605,12 +586,49 @@ void EnableMatchModeWithID(HWND hwndDlg, int ID_MATCH)
     }
 }
 
+void SwitchMatchMode(HWND hwndDlg, std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it)
+{
+    EnableMatchModeWithID(hwndDlg, it->first);
+
+    match_mode = it->second.second;
+
+    std::string title = g_szApplicationName + std::string(it->second.first);
+    SetWindowText(mainwnd, title.c_str());
+}
+
+void OpenDialog(HWND hwnd) {
+
+    int dialog_message = DialogBox(hinstance, "PARAM_DIALOG", hwnd, DlgParamProc);
+
+    if (dialog_message == NULL)
+    {
+        PostQuitMessage(0);
+    }
+
+    //create the game
+    g_pRaven = CreateGame();
+
+    if (g_pRaven == nullptr)
+    {
+        MessageBox(hwnd, "An error occured with the game creation. Please Try Again.", "Unexpected Error", MB_ICONERROR);
+    }
+}
+
+void HandleGameStatus(HWND hWnd, int status)
+{
+    if (status == 1)
+    {
+        MessageBox(hWnd, g_pRaven->GetVictoryMessage().c_str(), "Victoire", MB_ICONINFORMATION);
+        OpenDialog(hWnd);
+    }
+}
+
 //------------------------------- PARAM DIALOG --------------------------------
 
 BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HWND static mainwnd = GetParent(hwndDlg);
-    TCHAR* words = TEXT("A simple demonstration of a modal dialog window.");
+    mainwnd = GetParent(hwndDlg);
+    TCHAR* words = TEXT("Raven - Game Main Menu !");
     HWND static staticbox;
 
     switch (message)
@@ -637,10 +655,17 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
         SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETRANGE, 0, MAKELPARAM(TEAM_MATCH_MAX_BOT, TEAM_MATCH_MIN_BOT));
         SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETPOS, 0, TEAM_MATCH_INIT_BOT);
 
+        //Graphic update of the dialog
         EnableMatchModeWithID(hwndDlg, ID_GRPBOX_DEATHMATCH);
+        //Set the default match mode as "Death Match"
+        match_mode = MAP_GRP_BOXES_LIST.begin()->second.second;
+        //Change the app named accordingly
+        std::string title = g_szApplicationName + std::string(MAP_GRP_BOXES_LIST.begin()->second.first);
+        SetWindowText(mainwnd, title.c_str());
 
         return TRUE;
     }
+
     case WM_COMMAND:
         switch (HIWORD(wParam))
         {
@@ -652,7 +677,6 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                 );
 
                 // Get key with nb
-
                 std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it = MAP_GRP_BOXES_LIST.begin();
 
                 for (int i = 0; i < selection; i++)
@@ -662,6 +686,9 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                 EnableMatchModeWithID(hwndDlg, it->first);
 
                 match_mode = it->second.second;
+
+                std::string title = g_szApplicationName + std::string(it->second.first);
+                SetWindowText(mainwnd, title.c_str());
 
             }
             break;
@@ -683,53 +710,29 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                         GetDlgItem(hwndDlg, ID_MATCH_TYPE),
                         CB_GETCURSEL, NULL, NULL
                     );
+
+                    bot_number_deathmatch = SendMessage(
+                        GetDlgItem(hwndDlg, ID_DEATHMATCH_SPIN),
+                        UDM_GETPOS, NULL, NULL
+                    );
+
+                    bot_number_team_1 = SendMessage(
+                        GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_1),
+                        UDM_GETPOS, NULL, NULL
+                    );
+
+                    bot_number_team_2 = SendMessage(
+                        GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_2),
+                        UDM_GETPOS, NULL, NULL
+                    );
                     
                     EndDialog(hwndDlg, READY);
                 }
             }
             break;
-
-            default:
-                break;
         }
         break;
-
-    case WM_NOTIFY:
-        switch (wParam)
-        {
-        case ID_DEATHMATCH_SPIN:
-        {
-            bot_number_deathmatch = SendMessage(
-                GetDlgItem(hwndDlg, ID_DEATHMATCH_SPIN),
-                UDM_GETPOS, NULL, NULL
-            );
-        }
-        break;
-
-        case ID_TEAM_SPIN_TEAM_1:
-        {
-            bot_number_team_1 = SendMessage(
-                GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_1),
-                UDM_GETPOS, NULL, NULL
-            );
-        }
-        break;
-
-        case ID_TEAM_SPIN_TEAM_2:
-        {
-            bot_number_team_2 = SendMessage(
-                GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_2),
-                UDM_GETPOS, NULL, NULL
-            );
-        }
-        break;
-
-        default:
-            break;
-        }
-            
-        return TRUE;
-
+    
     case WM_CLOSE:
         EndDialog(hwndDlg, NULL);//destroy dialog window
         return FALSE;
@@ -815,6 +818,7 @@ int WINAPI WinMain (HINSTANCE hInstance,
 
     //enter the message loop
     bool bDone = false;
+    int status = -1;
 
     while(!bDone)
     {
@@ -835,8 +839,10 @@ int WINAPI WinMain (HINSTANCE hInstance,
 
       if (timer.ReadyForNextFrame() && msg.message != WM_QUIT)
       {
-        g_pRaven->Update();
+        status = g_pRaven->Update();
         
+        HandleGameStatus(hWnd, status);
+
         //render 
         RedrawWindow(hWnd);
       }

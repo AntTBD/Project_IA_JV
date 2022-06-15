@@ -32,6 +32,8 @@ BEGIN
         MENUITEM "Add Bot [ csr up ]",          IDM_GAME_ADDBOT
         MENUITEM "Remove Bot [ csr down ]",     IDM_GAME_REMOVEBOT
         MENUITEM "Toggle Pause [ 'P' ]",        IDM_GAME_PAUSE
+        MENUITEM "Main Menu [ ESCAPE ]"         IDM_GAME_MAIN_MENU
+        MENUITEM "Quit",                        IDM_GAME_QUIT
     END
     POPUP "Navigation"
     BEGIN

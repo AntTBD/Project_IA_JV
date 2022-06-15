@@ -54,6 +54,8 @@ private:
   //a list of all the bots that are inhabiting the map
   std::list<Raven_Bot*>            m_Bots;
 
+  int                              m_Classic_nb;
+
   //the user may select a bot to control manually. This is a pointer to that
   //bot
   Raven_Bot*                       m_pSelectedBot;
@@ -65,14 +67,23 @@ private:
   //this class manages all the path planning requests
   PathManager<Raven_PathPlanner>*  m_pPathManager;
 
-  std::vector<Raven_Team*>           m_Teams;
+  std::vector<Raven_Team*>         m_Teams;
+
+  int                              m_Team_nb_0;
+  int                              m_Team_nb_1;
+
+  unsigned int                     m_current_team_to_add_bot = 0;
 
   // mode
-    Mode                            m_Mode;
+  Mode                             m_Mode;
 
+  bool                             m_human_playing;
+  bool                             m_respawn_allowed;
 
   //if true the game will be paused
   bool                             m_bPaused;
+
+  std::string                      m_victory_message;
 
   //if true a bot is removed from the game
   bool                             m_bRemoveABot;
@@ -100,18 +111,24 @@ private:
   
 public:
   
-  Raven_Game();
+  Raven_Game(int nb_bot, int nb_bot_team_0, int nb_bot_team_1, Mode mode, bool human_playing);
   ~Raven_Game();
 
   //the usual suspects
   void Render();
-  void Update();
+  int Update();
 
   //loads an environment from a file
-  bool LoadMap(const std::string& FileName); 
+  bool LoadMap(const std::string& FileName);
+
+  // Initialize based on constructor datas
+  void InitializeGame();
+  bool CheckWinCondition();
 
   void AddBots(unsigned int NumBotsToAdd);
   void AddBotsTeam(unsigned int NumBotsToAdd);
+  void AddBotsToTeam(int team_id,int nb_bot);
+  void AddBotToTeam(int team_id);
   void AddBot(Raven_Bot* rb);
   void AddRocket(Raven_Bot* shooter, Vector2D target);
   void AddRailGunSlug(Raven_Bot* shooter, Vector2D target);
@@ -120,6 +137,8 @@ public:
 
   //removes the last bot to be added
   void RemoveBot();
+  void RemoveSpecificBot(Raven_Bot* Bot);
+
 
   //returns true if a bot of size BoundingRadius cannot move from A to B
   //without bumping into world geometry
@@ -181,7 +200,7 @@ public:
   const std::list<Raven_Bot*>&             GetAllBots()const{return m_Bots;}
   PathManager<Raven_PathPlanner>* const    GetPathManager(){return m_pPathManager;}
   int                                      GetNumBots()const{return m_Bots.size();}
-
+  std::string                              GetVictoryMessage()const { return m_victory_message; }
   
   void  TagRaven_BotsWithinViewRange(BaseGameEntity* pRaven_Bot, double range)
               {TagNeighbors(pRaven_Bot, m_Bots, range);}
