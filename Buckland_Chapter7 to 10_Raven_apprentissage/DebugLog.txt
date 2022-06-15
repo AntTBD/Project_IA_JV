@@ -1,0 +1,501 @@
+NavGraph for maps/Raven_DM1.map loaded okay
+Average edge length is 23.7036
+Neighborhood range set to 24.7036
+Partitioning navgraph nodes...
+Loading map...
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Wall
+Creating a Spawn Point
+Creating a Spawn Point
+Creating a Spawn Point
+Creating a Health
+Creating a Health
+Creating a Health
+Creating a rocket_launcher
+Creating a Railgun
+Creating a shotgun
+Creating a shotgun
+Creating a rocket_launcher
+maps/Raven_DM1.map loaded okay
+la taille du training set1
+Instanciation d'un bot apprenant728
+Instanciation d'un bot apprenant729
+la taille du training set2
+la taille du training set3
+la taille du training set4
+la taille du training set5
+la taille du training set6
+la taille du training set7
+la taille du training set8
+la taille du training set9
+la taille du training set10
+la taille du training set11
+la taille du training set12
+la taille du training set13
+la taille du training set14
+la taille du training set15
+la taille du training set16
+la taille du training set17
+la taille du training set18
+la taille du training set19
+la taille du training set20
+la taille du training set21
+la taille du training set22
+la taille du training set23
+la taille du training set24
+la taille du training set25
+la taille du training set26
+la taille du training set27
+la taille du training set28
+la taille du training set29
+la taille du training set30
+la taille du training set31
+la taille du training set32
+la taille du training set33
+la taille du training set34
+la taille du training set35
+la taille du training set36
+la taille du training set37
+la taille du training set38
+la taille du training set39
+la taille du training set40
+la taille du training set41
+la taille du training set42
+la taille du training set43
+la taille du training set44
+la taille du training set45
+la taille du training set46
+la taille du training set47
+la taille du training set48
+la taille du training set49
+la taille du training set50
+la taille du training set51
+la taille du training set52
+la taille du training set53
+la taille du training set54
+la taille du training set55
+la taille du training set56
+la taille du training set57
+la taille du training set58
+la taille du training set59
+la taille du training set60
+la taille du training set61
+la taille du training set62
+la taille du training set63
+la taille du training set64
+la taille du training set65
+la taille du training set66
+la taille du training set67
+la taille du training set68
+la taille du training set69
+la taille du training set70
+la taille du training set71
+la taille du training set72
+la taille du training set73
+la taille du training set74
+la taille du training set75
+la taille du training set76
+la taille du training set77
+la taille du training set78
+la taille du training set79
+la taille du training set80
+la taille du training set81
+la taille du training set82
+la taille du training set83
+la taille du training set84
+la taille du training set85
+la taille du training set86
+la taille du training set87
+la taille du training set88
+la taille du training set89
+la taille du training set90
+la taille du training set91
+la taille du training set92
+la taille du training set93
+la taille du training set94
+la taille du training set95
+la taille du training set96
+la taille du training set97
+la taille du training set98
+la taille du training set99
+la taille du training set100
+la taille du training set101
+la taille du training set102
+la taille du training set103
+la taille du training set104
+la taille du training set105
+la taille du training set106
+la taille du training set107
+la taille du training set108
+la taille du training set109
+la taille du training set110
+la taille du training set111
+la taille du training set112
+la taille du training set113
+la taille du training set114
+la taille du training set115
+la taille du training set116
+la taille du training set117
+la taille du training set118
+la taille du training set119
+la taille du training set120
+la taille du training set121
+la taille du training set122
+la taille du training set123
+la taille du training set124
+la taille du training set125
+la taille du training set126
+la taille du training set127
+la taille du training set128
+la taille du training set129
+la taille du training set130
+la taille du training set131
+la taille du training set132
+la taille du training set133
+la taille du training set134
+la taille du training set135
+la taille du training set136
+la taille du training set137
+la taille du training set138
+la taille du training set139
+la taille du training set140
+la taille du training set141
+la taille du training set142
+la taille du training set143
+la taille du training set144
+la taille du training set145
+la taille du training set146
+la taille du training set147
+la taille du training set148
+la taille du training set149
+la taille du training set150
+la taille du training set151
+la taille du training set152
+la taille du training set153
+la taille du training set154
+la taille du training set155
+la taille du training set156
+la taille du training set157
+la taille du training set158
+la taille du training set159
+la taille du training set160
+la taille du training set161
+la taille du training set162
+la taille du training set163
+la taille du training set164
+la taille du training set165
+la taille du training set166
+la taille du training set167
+la taille du training set168
+la taille du training set169
+la taille du training set170
+la taille du training set171
+la taille du training set172
+la taille du training set173
+la taille du training set174
+la taille du training set175
+la taille du training set176
+la taille du training set177
+la taille du training set178
+la taille du training set179
+la taille du training set180
+la taille du training set181
+la taille du training set182
+la taille du training set183
+la taille du training set184
+la taille du training set185
+la taille du training set186
+la taille du training set187
+la taille du training set188
+la taille du training set189
+la taille du training set190
+la taille du training set191
+la taille du training set192
+la taille du training set193
+la taille du training set194
+la taille du training set195
+la taille du training set196
+la taille du training set197
+la taille du training set198
+la taille du training set199
+la taille du training set200
+On passe par la
+lancement de l'apprentissage
+Modele d'apprentissage de tir est appris
+Instanciation d'un bot apprenant922
+Instanciation d'un bot apprenant1003
+Instanciation d'un bot apprenant1721
+Instanciation d'un bot apprenant1859
+BOT 403 IS STUCK!!
+Instanciation d'un bot apprenant2147
+BOT 403 IS STUCK!!
+Instanciation d'un bot apprenant2165
+BOT 729 IS STUCK!!
+BOT 401 IS STUCK!!
+Instanciation d'un bot apprenant2577
+Instanciation d'un bot apprenant3187
+Instanciation d'un bot apprenant3388
+Instanciation d'un bot apprenant3433
+Instanciation d'un bot apprenant3567
+Instanciation d'un bot apprenant3682
+BOT 2147 IS STUCK!!
+BOT 402 IS STUCK!!
+BOT 3682 IS STUCK!!
+Instanciation d'un bot apprenant4965
+Instanciation d'un bot apprenant5092
+BOT 403 IS STUCK!!
+Instanciation d'un bot apprenant5398
+Instanciation d'un bot apprenant5499
+Instanciation d'un bot apprenant5586
+BOT 1859 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 3682 IS STUCK!!
+BOT 5092 IS STUCK!!
+BOT 3388 IS STUCK!!
+BOT 1003 IS STUCK!!
+BOT 3388 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 2165 IS STUCK!!
+Instanciation d'un bot apprenant7196
+BOT 4965 IS STUCK!!
+BOT 5092 IS STUCK!!
+BOT 1003 IS STUCK!!
+BOT 3682 IS STUCK!!
+Instanciation d'un bot apprenant8142
+BOT 922 IS STUCK!!
+BOT 3682 IS STUCK!!
+Instanciation d'un bot apprenant8914
+Instanciation d'un bot apprenant8968
+BOT 728 IS STUCK!!
+BOT 402 IS STUCK!!
+BOT 403 IS STUCK!!
+BOT 3567 IS STUCK!!
+Instanciation d'un bot apprenant9265
+BOT 2577 IS STUCK!!
+BOT 7196 IS STUCK!!
+Instanciation d'un bot apprenant9456
+BOT 2147 IS STUCK!!
+BOT 3433 IS STUCK!!
+BOT 5586 IS STUCK!!
+BOT 728 IS STUCK!!
+Instanciation d'un bot apprenant10043
+Instanciation d'un bot apprenant10055
+Instanciation d'un bot apprenant10094
+Instanciation d'un bot apprenant10293
+Instanciation d'un bot apprenant10456
+BOT 8968 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 728 IS STUCK!!
+BOT 403 IS STUCK!!
+Instanciation d'un bot apprenant11303
+Instanciation d'un bot apprenant11362
+BOT 8968 IS STUCK!!
+BOT 8968 IS STUCK!!
+Instanciation d'un bot apprenant12886
+BOT 3388 IS STUCK!!
+Instanciation d'un bot apprenant13128
+BOT 1859 IS STUCK!!
+BOT 3388 IS STUCK!!
+Instanciation d'un bot apprenant13528
+BOT 12886 IS STUCK!!
+BOT 2577 IS STUCK!!
+BOT 10456 IS STUCK!!
+BOT 403 IS STUCK!!
+Instanciation d'un bot apprenant13657
+BOT 5398 IS STUCK!!
+BOT 10094 IS STUCK!!
+BOT 9265 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 3433 IS STUCK!!
+BOT 3682 IS STUCK!!
+BOT 12886 IS STUCK!!
+Instanciation d'un bot apprenant14243
+Instanciation d'un bot apprenant14282
+BOT 2147 IS STUCK!!
+BOT 3433 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 10043 IS STUCK!!
+BOT 11362 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 10055 IS STUCK!!
+BOT 729 IS STUCK!!
+Instanciation d'un bot apprenant15310
+BOT 12886 IS STUCK!!
+BOT 5092 IS STUCK!!
+BOT 1721 IS STUCK!!
+BOT 3388 IS STUCK!!
+BOT 1003 IS STUCK!!
+BOT 922 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 729 IS STUCK!!
+Instanciation d'un bot apprenant15614
+BOT 5092 IS STUCK!!
+BOT 8914 IS STUCK!!
+BOT 8142 IS STUCK!!
+Instanciation d'un bot apprenant15841
+Instanciation d'un bot apprenant16066
+BOT 5499 IS STUCK!!
+BOT 3388 IS STUCK!!
+BOT 2165 IS STUCK!!
+BOT 3187 IS STUCK!!
+Instanciation d'un bot apprenant16520
+Instanciation d'un bot apprenant16588
+Instanciation d'un bot apprenant16609
+BOT 403 IS STUCK!!
+BOT 5499 IS STUCK!!
+BOT 10293 IS STUCK!!
+BOT 9456 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 1721 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 4965 IS STUCK!!
+BOT 8968 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 2165 IS STUCK!!
+BOT 14282 IS STUCK!!
+BOT 8968 IS STUCK!!
+BOT 14243 IS STUCK!!
+BOT 2147 IS STUCK!!
+BOT 5499 IS STUCK!!
+BOT 8142 IS STUCK!!
+Instanciation d'un bot apprenant17445
+BOT 8914 IS STUCK!!
+BOT 922 IS STUCK!!
+BOT 15841 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 10456 IS STUCK!!
+BOT 13657 IS STUCK!!
+BOT 5586 IS STUCK!!
+BOT 3388 IS STUCK!!
+BOT 5499 IS STUCK!!
+BOT 14282 IS STUCK!!
+BOT 10293 IS STUCK!!
+BOT 1859 IS STUCK!!
+Instanciation d'un bot apprenant17897
+BOT 15841 IS STUCK!!
+BOT 401 IS STUCK!!
+BOT 5586 IS STUCK!!
+BOT 10456 IS STUCK!!
+BOT 2577 IS STUCK!!
+BOT 401 IS STUCK!!
+BOT 15614 IS STUCK!!
+BOT 5398 IS STUCK!!
+Instanciation d'un bot apprenant18301
+BOT 13128 IS STUCK!!
+BOT 13128 IS STUCK!!
+BOT 14243 IS STUCK!!
+BOT 729 IS STUCK!!
+BOT 3433 IS STUCK!!
+BOT 5586 IS STUCK!!
+BOT 13128 IS STUCK!!
+BOT 1721 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 728 IS STUCK!!
+BOT 401 IS STUCK!!
+BOT 15841 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 11362 IS STUCK!!
+BOT 8968 IS STUCK!!
+BOT 13657 IS STUCK!!
+BOT 15310 IS STUCK!!
+BOT 3187 IS STUCK!!
+BOT 728 IS STUCK!!
+BOT 8968 IS STUCK!!
+BOT 15841 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 401 IS STUCK!!
+BOT 2577 IS STUCK!!
+Instanciation d'un bot apprenant19531
+BOT 1721 IS STUCK!!
+Instanciation d'un bot apprenant19542
+BOT 3433 IS STUCK!!
+BOT 11362 IS STUCK!!
+BOT 17445 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 15614 IS STUCK!!
+BOT 401 IS STUCK!!
+Instanciation d'un bot apprenant19690
+BOT 12886 IS STUCK!!
+BOT 11362 IS STUCK!!
+BOT 13657 IS STUCK!!
+Instanciation d'un bot apprenant19766
+BOT 922 IS STUCK!!
+BOT 11362 IS STUCK!!
+BOT 729 IS STUCK!!
+BOT 8914 IS STUCK!!
+BOT 2577 IS STUCK!!
+BOT 1859 IS STUCK!!
+Instanciation d'un bot apprenant20206
+BOT 922 IS STUCK!!
+BOT 1003 IS STUCK!!
+BOT 17445 IS STUCK!!
+BOT 401 IS STUCK!!
+BOT 10293 IS STUCK!!
+BOT 16588 IS STUCK!!
+BOT 2577 IS STUCK!!
+BOT 8914 IS STUCK!!
+BOT 19531 IS STUCK!!
+BOT 2165 IS STUCK!!
+BOT 2577 IS STUCK!!
+BOT 17445 IS STUCK!!
+BOT 1859 IS STUCK!!
+BOT 12886 IS STUCK!!
+BOT 922 IS STUCK!!
+BOT 2165 IS STUCK!!
+BOT 
