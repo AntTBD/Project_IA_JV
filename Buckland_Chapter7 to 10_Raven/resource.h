@@ -26,6 +26,8 @@
 #define IDM_NAVIGATION_SMOOTH_PATHS_PRECISE 40015
 #define IDM_BOTS_SHOW_SENSED            40016
 #define IDM_GAME_PAUSE                  40017
+#define IDM_GAME_MAIN_MENU				40018
+#define IDM_GAME_QUIT					40019
 
 #define ID_MATCH_TYPE                   50001
 #define ID_GRPBOX_DEATHMATCH            50002

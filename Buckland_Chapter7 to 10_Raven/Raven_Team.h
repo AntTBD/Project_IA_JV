@@ -17,7 +17,7 @@ class Trigger_WeaponsTeamLoot;
 
 
 class Raven_Team {
-    static int Raven_Team_NextTeamID;
+    
 private:
     int m_id;
     std::string m_name;
@@ -31,6 +31,7 @@ private:
     bool IsMember(Raven_Bot *bot);
 public:
 
+    static int Raven_Team_NextTeamID;
 
     Raven_Team(std::string name, std::pair<Vector2D,int> lootPoint);
     ~Raven_Team();

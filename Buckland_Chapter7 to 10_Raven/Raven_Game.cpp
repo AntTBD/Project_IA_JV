@@ -36,19 +36,32 @@
 
 //----------------------------- ctor ------------------------------------------
 //-----------------------------------------------------------------------------
-Raven_Game::Raven_Game():m_pSelectedBot(NULL),
-                         m_bPaused(false),
-                         m_bRemoveABot(false),
-                         m_pMap(NULL),
-                         m_pPathManager(NULL),
-                         m_pGraveMarkers(NULL)
+Raven_Game::Raven_Game(
+    int nb_bot = 8,
+    int nb_bot_team_0 = 4,
+    int nb_bot_team_1 = 4,
+    Mode mode = Mode::DeathMatch,
+    bool human_playing = false
+) :
+    m_Classic_nb(nb_bot),
+    m_Team_nb_0(nb_bot_team_0),
+    m_Team_nb_1(nb_bot_team_1),
+    m_Mode(mode),
+    m_human_playing(human_playing),
+    m_respawn_allowed(true),
+    m_pSelectedBot(NULL),
+    m_bPaused(false),
+    m_bRemoveABot(false),
+    m_pMap(NULL),
+    m_pPathManager(NULL),
+    m_pGraveMarkers(NULL)
 {
-   m_Mode = Mode::Team;
+  m_current_team_to_add_bot = 0;
+  Raven_Team::Raven_Team_NextTeamID = 0;
+
   //load in the default map
   LoadMap(script->GetString("StartMap"));
-
-
-
+  InitializeGame();
 }
 
 
@@ -63,6 +76,46 @@ Raven_Game::~Raven_Game()
   delete m_pGraveMarkers;
 }
 
+//---------------------------- InitializeGame ------------------------------------------
+//
+//  deletes all the current objects ready for a map load
+//-----------------------------------------------------------------------------
+
+void Raven_Game::InitializeGame()
+{  
+    switch (m_Mode) {
+    case Mode::DeathMatch:
+    {
+        AddBots(m_Classic_nb);
+        break;
+    }
+    case Mode::Team:
+    {
+        SetTeams(2);
+        AddBotsToTeam(0, m_Team_nb_0);
+        AddBotsToTeam(1, m_Team_nb_1);
+
+        break;
+    }
+    case Mode::oneVSone:
+    {
+        SetTeams(2);
+        AddBotsToTeam(0, 1);
+        AddBotsToTeam(1, 1);
+        m_respawn_allowed = false;
+        break;
+    }
+    case Mode::BattleRoyale:
+    {
+        AddBots(m_Classic_nb);
+        m_respawn_allowed = false;
+        break;
+    }
+    default:
+        AddBots(m_Classic_nb);
+        break;
+    }
+}
 
 //---------------------------- Clear ------------------------------------------
 //
@@ -106,14 +159,61 @@ void Raven_Game::Clear()
 
 }
 
+bool Raven_Game::CheckWinCondition()
+{
+    switch (m_Mode) {
+    case Mode::DeathMatch:
+    {
+        std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
+        for (curBot; curBot != m_Bots.end(); ++curBot)
+        {
+            // TODO : replace 3 with a specific value passed to the constructor
+            if ((*curBot)->Score() >= 1)
+            {
+                if((*curBot)->isPossessed()) m_victory_message = "Vous avez gagné la partie !";
+                else m_victory_message = "Joueur Bot : " + std::to_string((*curBot)->ID()) + " gagne la partie !";
+                
+                return 1;
+            }
+        }
+        break;
+    }
+    case Mode::Team:
+    {
+        for (unsigned int i = 0; i < m_Teams.size(); i++)
+        {
+            if (m_Teams[i]->GetMembers().empty())
+            {
+                return true;
+            }
+        }
+        break;
+    }
+    case Mode::oneVSone:
+    case Mode::BattleRoyale:
+    {
+        if (m_Bots.size() == 1)
+        {
+            if (m_Bots.front()->isPossessed()) m_victory_message = "Vous avez gagné la partie !";
+            else m_victory_message = "Joueur Bot : " + std::to_string(m_Bots.front()->ID()) + " gagne la partie !";
+            return true;
+        }
+        break;
+    }
+    default:
+        return false;
+    }
+    return false;
+}
+
 //-------------------------------- Update -------------------------------------
 //
 //  calls the update function of each entity
 //-----------------------------------------------------------------------------
-void Raven_Game::Update()
+int Raven_Game::Update()
 { 
   //don't update if the user has paused the game
-  if (m_bPaused) return;
+  if (m_bPaused) return 2;
 
   m_pGraveMarkers->Update();
 
@@ -152,6 +252,8 @@ void Raven_Game::Update()
   //update the bots
   bool bSpawnPossible = true;
   
+  std::list<Raven_Bot*> markedForDeletion;
+
   std::list<Raven_Bot*>::iterator curBot = m_Bots.begin();
   for (curBot; curBot != m_Bots.end(); ++curBot)
   {
@@ -170,15 +272,28 @@ void Raven_Game::Update()
       m_pGraveMarkers->AddGrave((*curBot)->Pos());
 
       //change its status to spawning
-      (*curBot)->SetSpawning();
-    }
 
+      if (m_respawn_allowed) 
+      {
+          (*curBot)->SetSpawning();
+      }
+      else 
+      {
+          markedForDeletion.push_back(*curBot);
+      }
+    }
     //if this bot is alive update it.
     else if ( (*curBot)->isAlive())
     {
       (*curBot)->Update();
     }  
-  } 
+  }
+
+  curBot = markedForDeletion.begin();
+  for (curBot; curBot != markedForDeletion.end(); ++curBot)
+  {
+      RemoveSpecificBot(*curBot);
+  }
 
   //update the triggers
   m_pMap->UpdateTriggerSystem(m_Bots);
@@ -190,16 +305,19 @@ void Raven_Game::Update()
     if (!m_Bots.empty())
     {
       Raven_Bot* pBot = m_Bots.back();
-      if (pBot == m_pSelectedBot) m_pSelectedBot=0;
-      NotifyAllBotsOfRemoval(pBot);
-      if(pBot->HasTeam()) pBot->GetTeam()->RemoveMember(pBot);
-      delete m_Bots.back();
-      m_Bots.remove(pBot);
+      RemoveSpecificBot(pBot);
       pBot = 0;
     }
 
     m_bRemoveABot = false;
   }
+
+  if (CheckWinCondition())
+  {
+      return 1;
+  }
+
+  return 0;
 }
 
 
@@ -264,6 +382,14 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
     {  
       pBot->Spawn(pos);
 
+      if (m_human_playing)
+      {
+          m_human_playing = false;
+          m_pSelectedBot = m_Bots.front();
+          m_pSelectedBot->TakePossession();
+          m_pSelectedBot->GetBrain()->RemoveAllSubgoals();
+      }
+
       return true;   
     }
   }
@@ -294,24 +420,33 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd) {
     }
 }
 void Raven_Game::AddBotsTeam(unsigned int NumBotsToAdd) {
-    static int idTeam = 0;
     while (NumBotsToAdd--) {
-        //create a bot. (its position is irrelevant at this point because it will
-        //not be rendered until it is spawned)
-        Raven_Bot *rb = new Raven_Bot(this, Vector2D());
-        m_Teams.at(idTeam)->AddMember(rb);
-        rb->SetTeam(m_Teams.at(idTeam));
-
-        AddBot(rb);
+        AddBotToTeam(m_current_team_to_add_bot);
 
 #ifdef LOG_CREATIONAL_STUFF
         debug_con << "Adding bot with ID " << ttos(rb->ID()) << " to team " << m_Teams.at(idTeam)->GetName() << "";
 #endif
-
         // change team each time
-        idTeam = (idTeam + 1) % m_Teams.size();
+        m_current_team_to_add_bot = (m_current_team_to_add_bot + 1) % m_Teams.size();
     }
 }
+
+void Raven_Game::AddBotsToTeam(int team_id, int nb_bot)
+{
+    for (unsigned int i = 0; i < nb_bot; i++)
+        AddBotToTeam(team_id);
+}
+
+void Raven_Game::AddBotToTeam(int team_id)
+{
+    //not be rendered until it is spawned)
+    Raven_Bot* rb = new Raven_Bot(this, Vector2D());
+    m_Teams.at(team_id)->AddMember(rb);
+    rb->SetTeam(m_Teams.at(team_id));
+
+    AddBot(rb);
+}
+
 void Raven_Game::AddBot(Raven_Bot* rb)
 {
     //switch the default steering behaviors on
@@ -370,6 +505,15 @@ void Raven_Game::NotifyAllBotsOfRemoval(Raven_Bot* pRemovedBot)const
 void Raven_Game::RemoveBot()
 {
   m_bRemoveABot = true;
+}
+
+void Raven_Game::RemoveSpecificBot(Raven_Bot* Bot)
+{
+    if (Bot == m_pSelectedBot) m_pSelectedBot = 0;
+    NotifyAllBotsOfRemoval(Bot);
+    if (Bot->HasTeam()) Bot->GetTeam()->RemoveMember(Bot);
+    delete Bot;
+    m_Bots.remove(Bot);
 }
 
 //--------------------------- AddBolt -----------------------------------------
@@ -472,19 +616,6 @@ bool Raven_Game::LoadMap(const std::string& filename)
   //load the new map data
   if (m_pMap->LoadMap(filename))
   {
-      int NumBots = script->GetInt("NumBots");
-      switch (m_Mode) {
-      case Mode::Team:
-              SetTeams(2);
-              AddBotsTeam(NumBots);
-              break;
-
-              // TODO: Add more modes
-          default:
-              AddBots(NumBots);
-              break;
-      }
-  
     return true;
   }
 
