@@ -184,7 +184,7 @@ bool Raven_Game::CheckWinCondition()
                 if((*curBot)->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
                 else m_victory_message = "Joueur Bot : " + std::to_string((*curBot)->ID()) + " gagne la partie !";
                 
-                return 1;
+                return true;
             }
         }
         break;

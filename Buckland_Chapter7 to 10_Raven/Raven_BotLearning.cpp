@@ -56,7 +56,7 @@ void Raven_BotLearning::SetDead()
 {
     auto end = std::chrono::high_resolution_clock::now();
 
-    debug_con << "Bot apprenant " << ID() << " a vécu pendant : " << (std::chrono::duration_cast<std::chrono::seconds> (end - timer).count()) << "s" << "";
+    debug_con << "Bot apprenant " << ID() << " a vecu pendant : " << (std::chrono::duration_cast<std::chrono::seconds> (end - timer).count()) << "s" << "";
     debug_con << "Bot apprenant " << ID() << ": score : " << Score() << "";
     Raven_Bot::SetDead();
 }
@@ -117,6 +117,7 @@ void Raven_BotLearning::Update()
             m_vecObservation.push_back(m_pWeaponSys->GetAmmoRemainingForWeapon(m_pWeaponSys->GetCurrentWeapon()->GetType()));
             m_vecObservation.push_back(m_pWeaponSys->GetCurrentWeapon()->GetType());
             m_vecObservation.push_back((Health()));
+            m_vecObservation.push_back(m_pTargSys->GetTarget()->Health());
 
 
             std::vector<double> output = m_ModeleAppris.Update(m_vecObservation);

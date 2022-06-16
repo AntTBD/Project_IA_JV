@@ -246,6 +246,9 @@ public:
     // neural network utils
     std::vector<double> GetDataShoot() { return m_vecObservation; }
     std::vector<double> GetTargetShoot() { return m_vecTarget; }
+
+
+    bool operator == (const Raven_Bot& rhs);
 };
 
 

@@ -546,18 +546,23 @@ void Raven_Bot::Render()
     } else {
         gdi->BluePen();
     }
+
+    float leaderScale = 1.f;
+    if (this->HasTeam() && this->GetTeam()->GetLeader() == this){
+        leaderScale = 1.5f;
+    }
   
   m_vecBotVBTrans = WorldTransform(m_vecBotVB,
                                    Pos(),
                                    Facing(),
                                    Facing().Perp(),
-                                   Scale());
+                                   Scale() * leaderScale);
 
   gdi->ClosedShape(m_vecBotVBTrans);
   
   //draw the head
   gdi->BrownBrush();
-  gdi->Circle(Pos(), 6.0 * Scale().x);
+  gdi->Circle(Pos(), 6.0 * Scale().x * leaderScale);
 
 
   //render the bot's weapon
@@ -577,7 +582,11 @@ void Raven_Bot::Render()
   }
 
   gdi->TransparentText();
-  gdi->TextColor(0,255,0);
+    if (this->HasTeam()) {
+        gdi->TextColor(this->GetTeam()->ID() % NumColors);
+    } else {
+        gdi->TextColor(0,255,0);
+    }
 
   if (UserOptions->m_bShowBotIDs)
   {
@@ -635,4 +644,9 @@ void Raven_Bot::IncreaseHealth(unsigned int val)
 {
   m_iHealth+=val; 
   Clamp(m_iHealth, 0, m_iMaxHealth);
+}
+
+
+bool Raven_Bot::operator == (const Raven_Bot& rhs){
+    return ID() == rhs.ID();
 }
