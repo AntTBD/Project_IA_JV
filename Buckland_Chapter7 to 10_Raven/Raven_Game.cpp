@@ -28,6 +28,8 @@
 #include <Debug/DebugConsole.h>
 #include <misc/Stream_Utility_Functions.h>
 
+#include <thread> // pour la fonction d'apprentissage
+
 
 
 //uncomment to write object creation/deletion to debug console
@@ -56,12 +58,21 @@ Raven_Game::Raven_Game(
     m_pPathManager(NULL),
     m_pGraveMarkers(NULL)
 {
-  m_current_team_to_add_bot = 0;
-  Raven_Team::Raven_Team_NextTeamID = 0;
+    m_current_team_to_add_bot = 0;
+    Raven_Team::Raven_Team_NextTeamID = 0;
 
-  //load in the default map
-  LoadMap(script->GetString("StartMap"));
-  InitializeGame();
+    //load in the default map
+    LoadMap(script->GetString("StartMap"));
+    InitializeGame();
+
+    // for neural network
+    m_TrainingSet = CData();
+    m_estEntraine = false;
+    m_LancerApprentissage = false;
+
+    // todo : use interface
+    m_maxApprentissage = 500;
+    m_learningFromHuman = false;
 }
 
 
@@ -168,9 +179,9 @@ bool Raven_Game::CheckWinCondition()
         for (curBot; curBot != m_Bots.end(); ++curBot)
         {
             // TODO : replace 3 with a specific value passed to the constructor
-            if ((*curBot)->Score() >= 1)
+            if ((*curBot)->Score() >= 5)
             {
-                if((*curBot)->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
+                if((*curBot)->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
                 else m_victory_message = "Joueur Bot : " + std::to_string((*curBot)->ID()) + " gagne la partie !";
                 
                 return 1;
@@ -194,7 +205,7 @@ bool Raven_Game::CheckWinCondition()
     {
         if (m_Bots.size() == 1)
         {
-            if (m_Bots.front()->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
+            if (m_Bots.front()->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
             else m_victory_message = "Joueur Bot : " + std::to_string(m_Bots.front()->ID()) + " gagne la partie !";
             return true;
         }
@@ -204,6 +215,23 @@ bool Raven_Game::CheckWinCondition()
         return false;
     }
     return false;
+}
+
+void Raven_Game::TrainThread() {
+
+    m_LancerApprentissage = true;
+
+    debug_con << "lancement de l'apprentissage" << "";
+
+    m_ModeleApprentissage = CNeuralNet(m_TrainingSet.GetInputNb(), m_TrainingSet.GetTargetsNb(), NUM_HIDDEN_NEURONS, LEARNING_RATE);
+    bool isTraining = m_ModeleApprentissage.Train(&m_TrainingSet);
+
+    if (isTraining) {
+        debug_con << "Modele d'apprentissage de tir est appris" << "";
+        m_estEntraine = true;
+
+    }
+
 }
 
 //-------------------------------- Update -------------------------------------
@@ -276,6 +304,12 @@ int Raven_Game::Update()
       if (m_respawn_allowed) 
       {
           (*curBot)->SetSpawning();
+
+          //de temps en temps (une fois sur 2) créer un bot apprenant, lorqu'un un bot meurt.
+          //la fonction RandBool) rend vrai une fois sur 2.
+          if (m_estEntraine && RandBool()) {
+              AddBots(1, true);
+          }
       }
       else 
       {
@@ -285,7 +319,15 @@ int Raven_Game::Update()
     //if this bot is alive update it.
     else if ( (*curBot)->isAlive())
     {
-      (*curBot)->Update();
+        (*curBot)->Update();
+        if ((m_TrainingSet.GetInputSet().size() < m_maxApprentissage) && (*curBot)->GetTargetShoot().size() > 0) {
+            if((m_learningFromHuman &&  (*curBot)->isPossessed() && (*curBot)->Score() >= 1) ||    // si on apprend de l'humain : il faut le posséder ET avoir tuer au moins un bot
+                (!m_learningFromHuman && (*curBot)->Score() > 2)) {                                // sinon il apprend DES bots qui ont fait au moins 3 morts
+                //ajouter une observation au jeu d'entrainement
+                AddData((*curBot)->GetDataShoot(), (*curBot)->GetTargetShoot());
+                debug_con << "la taille du training set " << m_TrainingSet.GetInputSet().size() << "";
+            }
+        }
     }  
   }
 
@@ -310,6 +352,14 @@ int Raven_Game::Update()
     }
 
     m_bRemoveABot = false;
+  }
+
+  //Lancer l'apprentissage quand le jeu de données est suffisant
+  //la fonction d'apprentissage s'effectue en parallèle : thread
+  if ((m_TrainingSet.GetInputSet().size() >= m_maxApprentissage) && (!m_LancerApprentissage)) {
+
+      std::thread t1(&Raven_Game::TrainThread, this);
+      t1.detach();
   }
 
   if (CheckWinCondition())
@@ -401,16 +451,16 @@ bool Raven_Game::AttemptToAddBot(Raven_Bot* pBot)
 //
 //  Adds a bot and switches on the default steering behavior
 //-----------------------------------------------------------------------------
-void Raven_Game::AddBots(unsigned int NumBotsToAdd) {
+void Raven_Game::AddBots(unsigned int NumBotsToAdd, bool isLearningBot) {
     if(m_Mode == Mode::Team) {
-        AddBotsTeam(NumBotsToAdd);
+        AddBotsTeam(NumBotsToAdd, isLearningBot);
         return;
     }
 
     while (NumBotsToAdd--) {
         //create a bot. (its position is irrelevant at this point because it will
         //not be rendered until it is spawned)
-        Raven_Bot *rb = new Raven_Bot(this, Vector2D());
+        Raven_Bot *rb = GenerateBot(isLearningBot);
 
         AddBot(rb);
 
@@ -419,9 +469,9 @@ void Raven_Game::AddBots(unsigned int NumBotsToAdd) {
 #endif
     }
 }
-void Raven_Game::AddBotsTeam(unsigned int NumBotsToAdd) {
+void Raven_Game::AddBotsTeam(unsigned int NumBotsToAdd, bool isLearningBot) {
     while (NumBotsToAdd--) {
-        AddBotToTeam(m_current_team_to_add_bot);
+        AddBotToTeam(m_current_team_to_add_bot, isLearningBot);
 
 #ifdef LOG_CREATIONAL_STUFF
         debug_con << "Adding bot with ID " << ttos(rb->ID()) << " to team " << m_Teams.at(idTeam)->GetName() << "";
@@ -431,20 +481,35 @@ void Raven_Game::AddBotsTeam(unsigned int NumBotsToAdd) {
     }
 }
 
-void Raven_Game::AddBotsToTeam(int team_id, int nb_bot)
+void Raven_Game::AddBotsToTeam(int team_id, int nb_bot, bool isLearningBot)
 {
     for (unsigned int i = 0; i < nb_bot; i++)
-        AddBotToTeam(team_id);
+        AddBotToTeam(team_id, isLearningBot);
 }
 
-void Raven_Game::AddBotToTeam(int team_id)
+void Raven_Game::AddBotToTeam(int team_id, bool isLearningBot)
 {
+    //create a bot. (its position is irrelevant at this point because it will
     //not be rendered until it is spawned)
-    Raven_Bot* rb = new Raven_Bot(this, Vector2D());
+    Raven_Bot *rb = GenerateBot(isLearningBot);
     m_Teams.at(team_id)->AddMember(rb);
     rb->SetTeam(m_Teams.at(team_id));
 
     AddBot(rb);
+}
+
+Raven_Bot* Raven_Game::GenerateBot(bool isLearningBot){
+    Raven_Bot *rb;
+    if (!isLearningBot) {
+        rb = new Raven_Bot(this, Vector2D());
+        debug_con << "Instanciation d'un bot " << ttos(rb->ID()) << "";
+    }
+    else
+    {
+        rb = new Raven_BotLearning(this, Vector2D());
+        debug_con << "Instanciation d'un bot apprenant " << ttos(rb->ID()) << "";
+    }
+    return rb;
 }
 
 void Raven_Game::AddBot(Raven_Bot* rb)
@@ -479,6 +544,28 @@ void Raven_Game::SetTeams(int nbTeams){
         idTeam = (idTeam + 1) % m_Teams.size();
     }
 }
+
+
+
+//ajout � chaque update d'un bot des donn�es sur son cmportement
+bool Raven_Game::AddData(vector<double>& data, vector<double>& targets)
+{
+    if (data.size() > 0 && targets.size() > 0) {
+
+        if (m_TrainingSet.GetInputNb() <= 0)
+            m_TrainingSet = CData(data.size(), targets.size());
+
+        if (data.size() == m_TrainingSet.GetInputNb() && targets.size() == m_TrainingSet.GetTargetsNb()) {
+
+            m_TrainingSet.AddData(data, targets);
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
 //---------------------------- NotifyAllBotsOfRemoval -------------------------
 //
 //  when a bot is removed from the game by a user all remianing bots

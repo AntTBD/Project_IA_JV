@@ -223,11 +223,14 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='boundschecker|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="neuralNetwork\CData.cpp" />
+    <ClCompile Include="neuralNetwork\CNeuralNet.cpp" />
     <ClCompile Include="Raven_Bot.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='boundschecker|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="Raven_BotLearning.cpp" />
     <ClCompile Include="Raven_Game.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -537,7 +540,10 @@
     <ClCompile Include="triggers\Trigger_WeaponTeamLoot.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="neuralNetwork\CData.h" />
+    <ClInclude Include="neuralNetwork\CNeuralNet.h" />
     <ClInclude Include="Raven_Bot.h" />
+    <ClInclude Include="Raven_BotLearning.h" />
     <ClInclude Include="Raven_Game.h" />
     <ClInclude Include="Raven_Map.h" />
     <ClInclude Include="armory\Raven_Weapon.h" />

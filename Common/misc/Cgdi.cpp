@@ -41,11 +41,15 @@ Cgdi::Cgdi()
   m_RedBrush   = CreateSolidBrush(colors[red]);
   m_BlueBrush  = CreateSolidBrush(colors[blue]);
   m_GreyBrush  = CreateSolidBrush(colors[grey]);
+  m_PinkBrush   = CreateSolidBrush(colors[pink]);
   m_BrownBrush = CreateSolidBrush(colors[brown]);
   m_YellowBrush = CreateSolidBrush(colors[yellow]);
   m_LightBlueBrush = CreateSolidBrush(RGB(0,255,255));
   m_DarkGreenBrush = CreateSolidBrush(colors[dark_green]);
   m_OrangeBrush = CreateSolidBrush(colors[orange]);
+  m_PurpleBrush = CreateSolidBrush(colors[purple]);
+  m_LightGreyBrush = CreateSolidBrush(colors[light_grey]);
+  m_LightPinkBrush = CreateSolidBrush(colors[light_pink]);
 
   m_hdc = NULL;
 }

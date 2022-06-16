@@ -34,13 +34,13 @@ class Raven_SensoryMemory;
 
 
 class Raven_Bot : public MovingEntity {
-private:
+protected:
 
     enum Status {
         alive, dead, spawning
     };
 
-private:
+protected:
 
     //alive, dead or spawning?
     Status m_Status;
@@ -118,6 +118,10 @@ private:
     //the buffer for the transformed vertices
     std::vector <Vector2D> m_vecBotVBTrans;
 
+    //apprentissage.
+    //donnee � enregistrer d�crivant une situation de comportement de l'agent
+    std::vector<double> m_vecObservation; //distance-target, visibilite, quantite-arme, type arme, son niveau de vie
+    std::vector<double> m_vecTarget; //classe representer sous d'un vecteur de sortie.
 
     //bots shouldn't be copied, only created or respawned
     Raven_Bot(const Raven_Bot &);
@@ -176,8 +180,8 @@ public:
     bool isSpawning() const { return m_Status == spawning; }
 
     void SetSpawning() { m_Status = spawning; }
-    void SetDead() { m_Status = dead; }
-    void SetAlive() { m_Status = alive; }
+    virtual void SetDead() { m_Status = dead; }
+    virtual void SetAlive() { m_Status = alive; }
 
     //returns a value indicating the time in seconds it will take the bot
     //to reach the given position at its current speed.
@@ -238,6 +242,10 @@ public:
     void					            SetTeam(Raven_Team* team) { m_pTeam = team; }
     bool					            HasTeam() { return m_pTeam != NULL; }
     Raven_Team* const		            GetTeam() { return m_pTeam; }
+
+    // neural network utils
+    std::vector<double> GetDataShoot() { return m_vecObservation; }
+    std::vector<double> GetTargetShoot() { return m_vecTarget; }
 };
 
 

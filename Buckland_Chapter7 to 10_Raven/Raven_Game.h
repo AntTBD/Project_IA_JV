@@ -24,8 +24,10 @@
 #include "misc/utils.h"
 #include "game/EntityFunctionTemplates.h"
 #include "Raven_Bot.h"
+#include "Raven_BotLearning.h"
 #include "navigation/pathmanager.h"
 #include "Raven_Team.h"
+
 
 
 class BaseGameEntity;
@@ -108,7 +110,22 @@ private:
   void NotifyAllBotsOfRemoval(Raven_Bot* pRemovedBot)const;
 
   void SetTeams(int nbTeams);
-  
+
+    CData m_TrainingSet; //jeu d'apprentissage
+
+    bool m_LancerApprentissage; // pour lancer l'apprentissage
+
+    CNeuralNet m_ModeleApprentissage;
+
+    bool AddData(std::vector<double>&data, std::vector<double>& targets);
+
+    void TrainThread();
+
+    bool m_estEntraine;
+
+    int m_maxApprentissage;
+
+    bool m_learningFromHuman;
 public:
   
   Raven_Game(int nb_bot, int nb_bot_team_0, int nb_bot_team_1, Mode mode, bool human_playing);
@@ -125,11 +142,12 @@ public:
   void InitializeGame();
   bool CheckWinCondition();
 
-  void AddBots(unsigned int NumBotsToAdd);
-  void AddBotsTeam(unsigned int NumBotsToAdd);
-  void AddBotsToTeam(int team_id,int nb_bot);
-  void AddBotToTeam(int team_id);
+  void AddBots(unsigned int NumBotsToAdd, bool isLearningBot = false);
+  void AddBotsTeam(unsigned int NumBotsToAdd, bool isLearningBot = false);
+  void AddBotsToTeam(int team_id,int nb_bot, bool isLearningBot = false);
+  void AddBotToTeam(int team_id, bool isLearningBot = false);
   void AddBot(Raven_Bot* rb);
+  Raven_Bot* GenerateBot(bool isLearningBot = false);
   void AddRocket(Raven_Bot* shooter, Vector2D target);
   void AddRailGunSlug(Raven_Bot* shooter, Vector2D target);
   void AddShotGunPellet(Raven_Bot* shooter, Vector2D target);
@@ -207,6 +225,10 @@ public:
 
 
   Mode GetMode()const{return m_Mode;}
+
+  CNeuralNet GetModeleApprentissage() { return m_ModeleApprentissage; }
+
+
 };
 
 

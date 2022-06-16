@@ -84,6 +84,10 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
   m_pSensoryMem = new Raven_SensoryMemory(this, script->GetDouble("Bot_MemorySpan"));
 
   m_pTeam = NULL;
+
+  //initialisation pour les donn�es d'observation du training set
+  m_vecObservation = std::vector<double>(0);
+  m_vecTarget = std::vector<double>(0);
 }
 
 //-------------------------------- dtor ---------------------------------------
@@ -162,7 +166,29 @@ void Raven_Bot::Update()
 
     //this method aims the bot's current weapon at the current target
     //and takes a shot if a shot is possible
-    m_pWeaponSys->TakeAimAndShoot();
+      bool haveShoot = m_pWeaponSys->TakeAimAndShoot();
+
+
+      //sauvegarder les donn�es pour un eventuel apprentissage
+      if(m_pTargSys->isTargetPresent()){
+
+          m_vecObservation.clear();
+          m_vecTarget.clear();
+
+          m_vecObservation.push_back((Pos().Distance(m_pTargSys->GetTarget()->Pos())));
+          m_vecObservation.push_back(m_pTargSys->isTargetWithinFOV());
+          m_vecObservation.push_back(m_pWeaponSys->GetAmmoRemainingForWeapon(m_pWeaponSys->GetCurrentWeapon()->GetType()));
+          m_vecObservation.push_back(m_pWeaponSys->GetCurrentWeapon()->GetType());
+          m_vecObservation.push_back(Health());
+          m_vecObservation.push_back(m_pTargSys->GetTarget()->Health());
+
+          if (!haveShoot) {
+              m_vecTarget.push_back(0); // La classe est n�gative.  Ne tire pas
+          }
+          else {
+              m_vecTarget.push_back(1); // la classe de l'observation est positive. Il tire
+          }
+      }
   }
 }
 
@@ -262,7 +288,7 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
 
             }
             //the bot this bot has just killed should be removed as the target
-            else if(this->HasTeam()) m_pTargSys->ClearTarget();
+            else if(this->HasTeam()) GetTargetSys()->ClearTarget();
 
             return true;
 
@@ -289,14 +315,14 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
 
         case Msg_NewTeamTarget: {
             if(HasTeam()){
-                m_pTargSys->SetTarget(m_pTeam->GetTarget());
+                GetTargetSys()->SetTarget(m_pTeam->GetTarget());
             }
             return true;
         }
 
         case Msg_TeamTargetDown: {
             if(HasTeam()){
-                m_pTargSys->ClearTarget();
+                GetTargetSys()->ClearTarget();
             }
             return true;
         }

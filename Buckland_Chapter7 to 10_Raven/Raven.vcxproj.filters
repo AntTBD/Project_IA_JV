@@ -77,6 +77,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{f3f5ab42-49d8-4348-aa63-66655abd9be1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\NeuralNetwrok">
+      <UniqueIdentifier>{03eefe6f-916c-4057-bcaa-b86c50e49ab3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -273,6 +276,15 @@
     </ClCompile>
     <ClCompile Include="triggers\Trigger_WeaponTeamLoot.cpp">
       <Filter>AI\Triggers</Filter>
+    </ClCompile>
+    <ClCompile Include="neuralNetwork\CData.cpp">
+      <Filter>AI\NeuralNetwrok</Filter>
+    </ClCompile>
+    <ClCompile Include="neuralNetwork\CNeuralNet.cpp">
+      <Filter>AI\NeuralNetwrok</Filter>
+    </ClCompile>
+    <ClCompile Include="Raven_BotLearning.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,6 +629,15 @@
     </ClInclude>
     <ClInclude Include="triggers\Trigger_WeaponTeamLoot.h">
       <Filter>AI\Triggers</Filter>
+    </ClInclude>
+    <ClInclude Include="neuralNetwork\CData.h">
+      <Filter>AI\NeuralNetwrok</Filter>
+    </ClInclude>
+    <ClInclude Include="neuralNetwork\CNeuralNet.h">
+      <Filter>AI\NeuralNetwrok</Filter>
+    </ClInclude>
+    <ClInclude Include="Raven_BotLearning.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
