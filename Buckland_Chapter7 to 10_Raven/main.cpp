@@ -21,12 +21,16 @@
 // DEFAULT PARAMTERS FOR PARAMETERS DIALOG -----------------------------------------
 
 #define DEATH_MATCH_MAX_BOT         25
-#define DEATH_MATCH_MIN_BOT         0
-#define DEATH_MATCH_INIT_BOT        5
+#define DEATH_MATCH_MIN_BOT         2
+#define DEATH_MATCH_INIT_BOT        7
 
-#define TEAM_MATCH_MAX_BOT          10
+#define TEAM_MATCH_MAX_BOT          20
 #define TEAM_MATCH_MIN_BOT          1
 #define TEAM_MATCH_INIT_BOT         5
+
+#define BATTLEROYALE_MATCH_MAX_BOT          30
+#define BATTLEROYALE_MATCH_MIN_BOT          2
+#define BATTLEROYALE_MATCH_INIT_BOT         5
 
 
 // LIST FOR DIALOG CONTROL ---------------------------------------------------------
@@ -67,7 +71,15 @@ const std::list<int> ID_GRPBOX_ONEVSONE_ITEMS = {
 
 const std::list<int> ID_GRPBOX_BATTLEROYAL_ITEMS = {
     ID_GRPBOX_BATTLEROYALE,
+    ID_BATTLEROYALE_TEXT,
+    ID_BATTLEROYALE_SPIN_BOX,
+    ID_BATTLEROYALE_SPIN,
+};
 
+const std::list<int> ID_GRPBOX_LEARNING_ITEMS = {
+    ID_GRPBOX_LEARNING,
+    ID_RADIO_BOT,
+    ID_RADIO_HUMAN,
 };
 
 //--------------------------------- Globals ------------------------------
@@ -84,6 +96,8 @@ Raven_Game* g_pRaven;
 
 Raven_Game::Mode match_mode = Raven_Game::Mode::DeathMatch;
 bool human_playing = false;
+bool has_learning_bots = false;
+bool learn_from_human = false;
 
 // DEATHMATCH 
 int bot_number_deathmatch = DEATH_MATCH_INIT_BOT;
@@ -92,6 +106,8 @@ int bot_number_deathmatch = DEATH_MATCH_INIT_BOT;
 int bot_number_team_1 = TEAM_MATCH_INIT_BOT;
 int bot_number_team_2 = TEAM_MATCH_INIT_BOT;
 
+// DEATHMATCH 
+int bot_number_battleroyale = BATTLEROYALE_MATCH_INIT_BOT;
 
 void RegisterModalDialogClass(HWND);
 void SwitchMatchMode(HWND hwndDlg, std::map<int, std::pair <const char*, Raven_Game::Mode>>::const_iterator it);
@@ -418,7 +434,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
 
       }//end switch
     }
-    break;
+     break;
     
     case WM_PAINT:
       {
@@ -519,8 +535,11 @@ Raven_Game* CreateGame()
         bot_number_deathmatch,
         bot_number_team_1,
         bot_number_team_2,
+        bot_number_battleroyale,
         match_mode,
-        human_playing
+        human_playing,
+        has_learning_bots,
+        learn_from_human
     );
 
     return game;
@@ -555,6 +574,9 @@ int EnableGroupItemsWithGroupID(HWND hwndDlg, int ID, bool enable)
         break;
     case ID_GRPBOX_BATTLEROYALE:
         list = ID_GRPBOX_BATTLEROYAL_ITEMS;
+        break;
+    case ID_GRPBOX_LEARNING:
+        list = ID_GRPBOX_LEARNING_ITEMS;
         break;
     default:
         return NULL;
@@ -655,8 +677,16 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
         SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETRANGE, 0, MAKELPARAM(TEAM_MATCH_MAX_BOT, TEAM_MATCH_MIN_BOT));
         SendDlgItemMessage(hwndDlg, ID_TEAM_SPIN_TEAM_2, UDM_SETPOS, 0, TEAM_MATCH_INIT_BOT);
 
+        SendDlgItemMessage(hwndDlg, ID_BATTLEROYALE_SPIN, UDM_SETRANGE, 0, MAKELPARAM(BATTLEROYALE_MATCH_MAX_BOT, BATTLEROYALE_MATCH_MIN_BOT));
+        SendDlgItemMessage(hwndDlg, ID_BATTLEROYALE_SPIN, UDM_SETPOS, 0, BATTLEROYALE_MATCH_INIT_BOT);
+
+
+        HFONT hFont = CreateFont(1, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Arial");
+        SendMessage(hwndDlg, WM_SETFONT, (WPARAM)hFont, 0);
+
         //Graphic update of the dialog
         EnableMatchModeWithID(hwndDlg, ID_GRPBOX_DEATHMATCH);
+        EnableGroupItemsWithGroupID(hwndDlg, ID_GRPBOX_LEARNING, false);
         //Set the default match mode as "Death Match"
         match_mode = MAP_GRP_BOXES_LIST.begin()->second.second;
         //Change the app named accordingly
@@ -703,6 +733,21 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                     ); 
                 }
 
+                // Learning Bot checkbox 
+                if (LOWORD(wParam) == ID_LEARNING_CHECK) {
+                    has_learning_bots = IsDlgButtonChecked(hwndDlg, ID_LEARNING_CHECK);
+                    EnableGroupItemsWithGroupID(hwndDlg, ID_GRPBOX_LEARNING, has_learning_bots);
+                }
+
+                // Radio 
+                // Learning Bot checkbox 
+                if (LOWORD(wParam) == ID_RADIO_BOT) {
+                    learn_from_human = false;
+                }
+                if (LOWORD(wParam) == ID_RADIO_HUMAN) {
+                    learn_from_human = true;
+                }
+
                 // Start button pressed
                 if (LOWORD(wParam) == ID_START_BUTTON) {
                     
@@ -710,23 +755,61 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
                         GetDlgItem(hwndDlg, ID_MATCH_TYPE),
                         CB_GETCURSEL, NULL, NULL
                     );
-
-                    bot_number_deathmatch = SendMessage(
-                        GetDlgItem(hwndDlg, ID_DEATHMATCH_SPIN),
-                        UDM_GETPOS, NULL, NULL
-                    );
-
-                    bot_number_team_1 = SendMessage(
-                        GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_1),
-                        UDM_GETPOS, NULL, NULL
-                    );
-
-                    bot_number_team_2 = SendMessage(
-                        GetDlgItem(hwndDlg, ID_TEAM_SPIN_TEAM_2),
-                        UDM_GETPOS, NULL, NULL
-                    );
                     
                     EndDialog(hwndDlg, READY);
+                }
+
+                // Quit button pressed
+                if (LOWORD(wParam) == ID_QUIT_BTN) {
+                    PostQuitMessage(0);
+                }
+            }
+            break;
+
+            case EN_CHANGE:
+            {
+                if (LOWORD(wParam) == ID_DEATHMATCH_SPIN_BOX) {
+
+                    bot_number_deathmatch = GetDlgItemInt(hwndDlg, ID_DEATHMATCH_SPIN_BOX, false, false);
+                    
+                    if (bot_number_deathmatch > DEATH_MATCH_MAX_BOT)
+                    {
+                        bot_number_deathmatch = DEATH_MATCH_MAX_BOT;
+                        SetDlgItemText(hwndDlg, ID_DEATHMATCH_SPIN_BOX, std::to_string(bot_number_deathmatch).c_str());
+                    }
+                }
+
+                if (LOWORD(wParam) == ID_TEAM_SPIN_TEAM_1_BOX) {
+
+                    bot_number_team_1 = GetDlgItemInt(hwndDlg, ID_TEAM_SPIN_TEAM_1_BOX, false, false);
+
+                    if (bot_number_team_1 > TEAM_MATCH_MAX_BOT)
+                    {
+                        bot_number_team_1 = TEAM_MATCH_MAX_BOT;
+                        SetDlgItemText(hwndDlg, ID_TEAM_SPIN_TEAM_1_BOX, std::to_string(bot_number_team_1).c_str());
+                    }
+                }
+
+                if (LOWORD(wParam) == ID_TEAM_SPIN_TEAM_2_BOX) {
+
+                    bot_number_team_2 = GetDlgItemInt(hwndDlg, ID_TEAM_SPIN_TEAM_2_BOX, false, false);
+
+                    if (bot_number_team_2 > TEAM_MATCH_MAX_BOT)
+                    {
+                        bot_number_team_2 = TEAM_MATCH_MAX_BOT;
+                        SetDlgItemText(hwndDlg, ID_TEAM_SPIN_TEAM_2_BOX, std::to_string(bot_number_team_2).c_str());
+                    }
+                }
+
+                if (LOWORD(wParam) == ID_BATTLEROYALE_SPIN_BOX) {
+
+                    bot_number_battleroyale = GetDlgItemInt(hwndDlg, ID_BATTLEROYALE_SPIN_BOX, false, false);
+
+                    if (bot_number_battleroyale > BATTLEROYALE_MATCH_MAX_BOT)
+                    {
+                        bot_number_battleroyale = BATTLEROYALE_MATCH_MAX_BOT;
+                        SetDlgItemText(hwndDlg, ID_BATTLEROYALE_SPIN_BOX, std::to_string(bot_number_battleroyale).c_str());
+                    }
                 }
             }
             break;

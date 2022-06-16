@@ -3,9 +3,16 @@
 // Utilisé par Script1.rc
 //
 #define IDR_MENU1                       101
+#define ID_QUIT_BTN                     1015
+#define ID_GROUPBOX_LEARNING            1016
+#define ID_GRPBOX_LEARNING              1016
+#define ID_RADIO_HUMAN                  1017
+#define ID_RADIO_BOT                    1018
+#define ID_CLAUDE                       1019
 #define IDC_ORIGIN                      10000
-#define ID_START_BUTTON					10001
-#define ID_HUMAN_CHECK					10002
+#define ID_START_BUTTON                 10001
+#define ID_HUMAN_CHECK                  10002
+#define ID_LEARNING_CHECK               10003
 #define ID_MENU_LOAD                    40001
 #define IDM_MAP_LOAD                    40001
 #define IDM_GAME_LOAD                   40001
@@ -26,29 +33,30 @@
 #define IDM_NAVIGATION_SMOOTH_PATHS_PRECISE 40015
 #define IDM_BOTS_SHOW_SENSED            40016
 #define IDM_GAME_PAUSE                  40017
-#define IDM_GAME_MAIN_MENU				40018
-#define IDM_GAME_QUIT					40019
-
+#define IDM_GAME_MAIN_MENU              40018
+#define IDM_GAME_QUIT                   40019
 #define ID_MATCH_TYPE                   50001
 #define ID_GRPBOX_DEATHMATCH            50002
 #define ID_GRPBOX_TEAMMATCH             50003
 #define ID_GRPBOX_ONEVSONE              50004
 #define ID_GRPBOX_BATTLEROYALE          50005
-
 #define ID_DEATHMATCH_TEXT_NB           50012
-#define ID_DEATHMATCH_SPIN              50022
-#define ID_DEATHMATCH_SPIN_TEXT         50032
-#define ID_DEATHMATCH_SPIN_BOX			50042
-
 #define ID_TEAM_TEXT_1                  50013
+#define ID_BATTLEROYALE_TEXT            50014
+#define ID_DEATHMATCH_SPIN              50022
 #define ID_TEAM_TEXT_2                  50023
+#define ID_DEATHMATCH_SPIN_TEXT         50032
 #define ID_TEAM_SPIN_TEAM_1             50033
+#define ID_BATTLEROYALE_SPIN            50034
+#define ID_TEAM_SPIN_TEAM_3             50035
+#define ID_DEATHMATCH_SPIN_BOX          50042
 #define ID_TEAM_SPIN_TEAM_2             50043
 #define ID_TEAM_SPIN_TEAM_1_TEXT        50053
+#define ID_BATTLEROYALE_SPIN_TEXT       50053
+#define ID_BATTLEROYALE_SPIN_BOX        50053
 #define ID_TEAM_SPIN_TEAM_2_TEXT        50063
-#define ID_TEAM_SPIN_TEAM_1_BOX			50073
-#define ID_TEAM_SPIN_TEAM_2_BOX			50083
-
+#define ID_TEAM_SPIN_TEAM_1_BOX         50073
+#define ID_TEAM_SPIN_TEAM_2_BOX         50083
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -57,7 +65,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        111
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
