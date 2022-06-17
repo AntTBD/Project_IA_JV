@@ -251,7 +251,11 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
     //handle any messages not handles by the goals
     switch (msg.Msg) {
         case Msg_TakeThatMF:
-
+            if (HasTeam()) {
+                if (GetTeam()->GetLeader() == this) {
+                    GetTeam()->SetProtection();
+                }
+            }
 
             //just return if already dead or spawning
             if (isDead() || isSpawning()) return true;
@@ -268,6 +272,9 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
                                         NO_ADDITIONAL_INFO);
 
                 if (HasTeam()) {
+                    if (GetTeam()->GetLeader() == this) {
+                        GetTeam()->ClearProtection();
+                    }
                     for (Raven_Weapon* weapon : GetWeaponSys()->GetWeaponInventory()) {
                         m_pWorld->GetMap()->AddWeaponTeamLoot(GetTeam(), weapon, m_pWorld);
                     }
@@ -284,6 +291,7 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
             // this bot has a team and shot down the team's target
             if(this->HasTeam())
             {
+               
                 if(m_pTeam->IsTarget(msg.Sender)) m_pTeam->ClearTarget(ID());
 
             }
@@ -327,11 +335,19 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
             return true;
         }
 
+        case Msg_TeamLeaderUnderFire: {
+            SetProtection(true);
+            //GetBrain()->AddGoal_MoveToPosition(GetTeam()->GetLeader()->Pos() + GetOffset());
+            return true;
+        }
+
 
         default:
             return false;
     }
 }
+
+
 
 //------------------ RotateFacingTowardPosition -------------------------------
 //

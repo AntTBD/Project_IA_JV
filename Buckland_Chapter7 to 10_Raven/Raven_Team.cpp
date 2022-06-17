@@ -55,6 +55,36 @@ void Raven_Team::SetTarget(Raven_Bot *target, int id_bot) {
     }
 }
 
+void Raven_Team::SetProtection() {
+    // Used to determine the radius of the circle based on the nb of following vehicles
+    int ratio = 2;
+    int radius = GetLeader()->BRadius() * m_members.size();
+    double angle = 2 * M_PI / (m_members.size()-1);
+
+    unsigned int i = 0;
+    for (Raven_Bot* bot : m_members) {
+        if (bot != GetLeader()) {
+            double currentCos = cos(angle * i);
+            double currentSin = sin(angle * i);
+            i++;
+            bot->SetOffset(radius * Vector2D(currentCos, currentSin));
+            Dispatcher->DispatchMsg(SEND_MSG_IMMEDIATELY,
+                GetLeader()->ID(),
+                bot->ID(),
+                Msg_TeamLeaderUnderFire,
+                NO_ADDITIONAL_INFO);
+        }
+    }
+}
+
+void Raven_Team::ClearProtection() {
+    for (Raven_Bot* bot : m_members) {
+        if (bot != GetLeader()) {
+            bot->SetProtection(false);
+        }
+    }
+}
+
 void Raven_Team::ClearTarget(int id_bot) {
     m_target = NULL;
     for (Raven_Bot* bot: m_members) {
