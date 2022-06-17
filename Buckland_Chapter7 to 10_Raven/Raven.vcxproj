@@ -665,7 +665,6 @@
     <ClInclude Include="triggers\Trigger_WeaponTeamLoot.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="Params.ini" />
     <None Include="Params.lua" />
     <None Include="note.txt" />
