@@ -22,7 +22,8 @@ enum message_type
   Msg_GunshotSound,
   Msg_UserHasRemovedBot,
   Msg_NewTeamTarget,
-  Msg_TeamTargetDown
+  Msg_TeamTargetDown,
+  Msg_TeamLeaderUnderFire
 };
 
 //used for outputting debug info
@@ -67,6 +68,10 @@ inline std::string MessageToString(int msg) {
         case Msg_TeamTargetDown:
 
             return  "Msg_TeamTargetDown";
+
+        case Msg_TeamLeaderUnderFire:
+
+            return  "Msg_TeamLeaderUnderFire";
 
         default:
 

@@ -319,6 +319,15 @@ int Raven_Game::Update()
     //if this bot is alive update it.
     else if ( (*curBot)->isAlive())
     {
+        if ((*curBot)->isProtecting()) {
+            if ((*curBot)->canWalkTo((*curBot)->GetTeam()->GetLeader()->Pos() + (*curBot)->GetOffset())) {
+                (*curBot)->GetBrain()->RemoveAllSubgoals();
+                (*curBot)->GetBrain()->AddGoal_MoveToPosition((*curBot)->GetTeam()->GetLeader()->Pos() + (*curBot)->GetOffset());
+            }
+            else {
+                (*curBot)->SetProtection(false);
+            }
+        }
         (*curBot)->Update();
         if ((m_TrainingSet.GetInputSet().size() < m_maxApprentissage) && (*curBot)->GetTargetShoot().size() > 0) {
             if((m_learningFromHuman &&  (*curBot)->isPossessed() && (*curBot)->Score() >= 1) ||    // si on apprend de l'humain : il faut le posséder ET avoir tuer au moins un bot

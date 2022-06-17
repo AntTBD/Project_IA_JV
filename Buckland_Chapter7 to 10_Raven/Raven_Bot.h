@@ -89,6 +89,12 @@ protected:
     //each time this bot kills another this value is incremented
     int m_iScore;
 
+    //offset for leader's protection
+    Vector2D m_offset;
+
+    //bool checking if protection is needed
+    bool m_protection = false;
+
     //the direction the bot is facing (and therefore the direction of aim).
     //Note that this may not be the same as the bot's heading, which always
     //points in the direction of the bot's movement
@@ -240,6 +246,10 @@ public:
 
     // Team information & setter
     void					            SetTeam(Raven_Team* team) { m_pTeam = team; }
+    void                                SetOffset(Vector2D offset) { m_offset = offset; }
+    Vector2D                            GetOffset() { return m_offset; }
+    void                                SetProtection(bool flag) { m_protection = flag; }
+    bool                                isProtecting() { return m_protection; }
     bool					            HasTeam() { return m_pTeam != NULL; }
     Raven_Team* const		            GetTeam() { return m_pTeam; }
 

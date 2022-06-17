@@ -1,5 +1,6 @@
 #ifndef RAVEN_TEAM_H
 #define RAVEN_TEAM_H
+#define _USE_MATH_DEFINES
 
 #include <vector>
 #include <tuple>
@@ -40,6 +41,8 @@ public:
     void RemoveMember(Raven_Bot* bot);
     void SetLeader(Raven_Bot* bot);
     void SetTarget(Raven_Bot* target, int id_bot);
+    void SetProtection();
+    void ClearProtection();
     void ClearTarget(int id_bot);
 
     int ID() const { return m_id; }
