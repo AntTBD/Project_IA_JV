@@ -14,6 +14,7 @@ enum
   goal_traverse_edge,
   goal_move_to_position,
   goal_get_health,
+  goal_get_loot,
   goal_get_shotgun,
   goal_get_rocket_launcher,
   goal_get_railgun,

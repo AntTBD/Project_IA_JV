@@ -26,6 +26,25 @@ double Raven_Feature::DistanceToItem(Raven_Bot* pBot, int ItemType)
   return DistanceToItem / MaxDistance;
 }
 
+//-----------------------------------------------------------------------------
+double Raven_Feature::DistanceToPosition(Raven_Bot* pBot, int nodeID)
+{
+  //determine the distance to a node
+  double DistanceToPos = pBot->GetPathPlanner()->GetCostToNode(nodeID);
+
+  //if the previous method returns a negative value then there is no item of
+  //the specified type present in the game world at this time.
+  if (DistanceToPos < 0 ) return 1;
+
+  //these values represent cutoffs. Any distance over MaxDistance results in
+  //a value of 0, and value below MinDistance results in a value of 1
+  const double MaxDistance = 500.0;
+  const double MinDistance = 50.0;
+
+  Clamp(DistanceToPos, MinDistance, MaxDistance);
+
+  return DistanceToPos / MaxDistance;
+}
 
 //----------------------- GetMaxRoundsBotCanCarryForWeapon --------------------
 //

@@ -167,18 +167,21 @@ void Raven_Map::AddWeapon_Giver(int type_of_weapon, std::ifstream& in)
 //----------------------- AddWeaponTeamLoot ----------------------------------
 //-----------------------------------------------------------------------------
 void Raven_Map::AddWeaponTeamLoot(Raven_Team* team, Raven_Weapon* weapon, Raven_Game* world){
-    Trigger_WeaponTeamLoot* wtl = new Trigger_WeaponTeamLoot(team->GetLootPoint(), team, weapon, world,team->GetLootPointNodeId()); // TODO : change 0
+    if(weapon->NumRoundsRemaining() > 0) {
+        Trigger_WeaponTeamLoot *wtl = new Trigger_WeaponTeamLoot(team->GetLootPoint(), team, weapon, world,
+                                                                 team->GetLootPointNodeId());
 
-    //add it to the appropriate vectors
-    m_TriggerSystem.Register(wtl);
+        //add it to the appropriate vectors
+        m_TriggerSystem.Register(wtl);
 
-    //let the corresponding navgraph node point to this object
-    NavGraph::NodeType& node = m_pNavGraph->GetNode(wtl->GraphNodeIndex());
+        //let the corresponding navgraph node point to this object
+        NavGraph::NodeType &node = m_pNavGraph->GetNode(wtl->GraphNodeIndex());
 
-    node.SetExtraInfo(wtl);
+        node.SetExtraInfo(wtl);
 
-    //register the entity
-    EntityMgr->RegisterEntity(wtl);
+        //register the entity
+        EntityMgr->RegisterEntity(wtl);
+    }
 }
 
 

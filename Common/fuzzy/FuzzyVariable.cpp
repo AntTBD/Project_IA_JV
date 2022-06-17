@@ -28,6 +28,10 @@ FuzzyVariable::~FuzzyVariable()
 //-----------------------------------------------------------------------------
 void FuzzyVariable::Fuzzify(double val)
 {    
+    // clamp to avoid bugs
+    if (val < m_dMinRange) val = m_dMinRange;
+    else if (val > m_dMaxRange) val = m_dMaxRange;
+
   //make sure the value is within the bounds of this variable
   assert ( (val >= m_dMinRange) && (val <= m_dMaxRange) && 
            "<FuzzyVariable::Fuzzify>: value out of range");

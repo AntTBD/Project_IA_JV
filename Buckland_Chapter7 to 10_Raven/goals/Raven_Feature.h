@@ -26,6 +26,8 @@ public:
   //item of the given type present in the game world at the time this method
   //is called the value returned is 1
   static double DistanceToItem(Raven_Bot* pBot, int ItemType);
+
+  static double DistanceToPosition(Raven_Bot* pBot, int nodeID);
   
   //returns a value between 0 and 1 based on how much ammo the bot has for
   //the given weapon, and the maximum amount of ammo the bot can carry. The

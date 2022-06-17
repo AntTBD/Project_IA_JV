@@ -218,6 +218,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="goals\GetLootGoal_Evaluator.cpp" />
     <ClCompile Include="main.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -540,6 +541,7 @@
     <ClCompile Include="triggers\Trigger_WeaponTeamLoot.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="goals\GetLootGoal_Evaluator.h" />
     <ClInclude Include="neuralNetwork\CData.h" />
     <ClInclude Include="neuralNetwork\CNeuralNet.h" />
     <ClInclude Include="Raven_Bot.h" />

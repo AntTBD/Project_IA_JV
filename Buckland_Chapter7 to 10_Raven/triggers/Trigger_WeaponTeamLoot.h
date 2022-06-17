@@ -7,12 +7,14 @@
 #include "../armory/Raven_Weapon.h"
 #include "../Raven_Game.h"
 
+
 class Trigger_WeaponTeamLoot : public Trigger<Raven_Bot>
 {
 private :
 
     // the team that will receive the weapons
     Raven_Team* m_Team;
+    int m_weaponType;
     int m_ammoCurrentWeaponType;
     Raven_Game* m_pWorld;
 
@@ -24,6 +26,8 @@ public :
     void Try(Raven_Bot* pBot);
 
     void Render();
+
+    Raven_Team* GetTeam(){ return m_Team; }
 };
 
 

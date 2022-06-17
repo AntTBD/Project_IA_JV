@@ -94,7 +94,7 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos):
 //-----------------------------------------------------------------------------
 Raven_Bot::~Raven_Bot()
 {
-  debug_con << "deleting raven bot (id = " << ID() << ")" << "";
+  debug_con << "deleting " << typeid(this).name() << " (id = " << ID() << ")" << "";
   
   delete m_pBrain;
   delete m_pPathPlanner;

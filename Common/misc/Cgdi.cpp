@@ -91,6 +91,10 @@ Cgdi::~Cgdi()
   DeleteObject(m_YellowBrush);
   DeleteObject(m_DarkGreenBrush);
   DeleteObject(m_OrangeBrush);
+  DeleteObject(m_PinkBrush);
+  DeleteObject(m_PurpleBrush);
+  DeleteObject(m_LightGreyBrush);
+  DeleteObject(m_LightPinkBrush);
 
 }
 

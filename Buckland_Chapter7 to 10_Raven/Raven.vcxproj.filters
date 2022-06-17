@@ -286,6 +286,9 @@
     <ClCompile Include="Raven_BotLearning.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="goals\GetLootGoal_Evaluator.cpp">
+      <Filter>AI\goals\goal evaluation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Raven_Bot.h">
@@ -638,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="Raven_BotLearning.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="goals\GetLootGoal_Evaluator.h">
+      <Filter>AI\goals\goal evaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
