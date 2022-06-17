@@ -42,14 +42,20 @@ Raven_Game::Raven_Game(
     int nb_bot = 8,
     int nb_bot_team_0 = 4,
     int nb_bot_team_1 = 4,
+    int nb_bot_battleroyale = 10,
     Mode mode = Mode::DeathMatch,
-    bool human_playing = false
+    bool human_playing = false,
+    bool has_learning_bot = false,
+    bool is_learning_from_human = false
 ) :
     m_Classic_nb(nb_bot),
     m_Team_nb_0(nb_bot_team_0),
     m_Team_nb_1(nb_bot_team_1),
+    m_BattleRoyale_nb(nb_bot_battleroyale),
     m_Mode(mode),
     m_human_playing(human_playing),
+    m_learning_bots(has_learning_bot),
+    m_learningFromHuman(is_learning_from_human),
     m_respawn_allowed(true),
     m_pSelectedBot(NULL),
     m_bPaused(false),
@@ -72,7 +78,6 @@ Raven_Game::Raven_Game(
 
     // todo : use interface
     m_maxApprentissage = 500;
-    m_learningFromHuman = false;
 }
 
 
@@ -118,7 +123,7 @@ void Raven_Game::InitializeGame()
     }
     case Mode::BattleRoyale:
     {
-        AddBots(m_Classic_nb);
+        AddBots(m_BattleRoyale_nb);
         m_respawn_allowed = false;
         break;
     }
@@ -179,7 +184,7 @@ bool Raven_Game::CheckWinCondition()
         for (curBot; curBot != m_Bots.end(); ++curBot)
         {
             // TODO : replace 3 with a specific value passed to the constructor
-            if ((*curBot)->Score() >= 5)
+            if ((*curBot)->Score() >= DEATHMATCH_SCORE_TO_WIN)
             {
                 if((*curBot)->isPossessed()) m_victory_message = "Vous avez gagn� la partie !";
                 else m_victory_message = "Joueur Bot : " + std::to_string((*curBot)->ID()) + " gagne la partie !";
@@ -229,7 +234,6 @@ void Raven_Game::TrainThread() {
     if (isTraining) {
         debug_con << "Modele d'apprentissage de tir est appris" << "";
         m_estEntraine = true;
-
     }
 
 }
@@ -307,7 +311,7 @@ int Raven_Game::Update()
 
           //de temps en temps (une fois sur 2) créer un bot apprenant, lorqu'un un bot meurt.
           //la fonction RandBool) rend vrai une fois sur 2.
-          if (m_estEntraine && RandBool()) {
+          if (m_learning_bots && m_estEntraine && RandBool()) {
               AddBots(1, true);
           }
       }

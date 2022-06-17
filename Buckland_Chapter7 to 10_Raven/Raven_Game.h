@@ -28,7 +28,7 @@
 #include "navigation/pathmanager.h"
 #include "Raven_Team.h"
 
-
+#define DEATHMATCH_SCORE_TO_WIN 5
 
 class BaseGameEntity;
 class Raven_Projectile;
@@ -73,6 +73,7 @@ private:
 
   int                              m_Team_nb_0;
   int                              m_Team_nb_1;
+  int                              m_BattleRoyale_nb;
 
   unsigned int                     m_current_team_to_add_bot = 0;
 
@@ -80,6 +81,7 @@ private:
   Mode                             m_Mode;
 
   bool                             m_human_playing;
+  bool                             m_learning_bots;
   bool                             m_respawn_allowed;
 
   //if true the game will be paused
@@ -128,7 +130,16 @@ private:
     bool m_learningFromHuman;
 public:
   
-  Raven_Game(int nb_bot, int nb_bot_team_0, int nb_bot_team_1, Mode mode, bool human_playing);
+    Raven_Game(
+        int nb_bot,
+        int nb_bot_team_0,
+        int nb_bot_team_1,
+        int nb_bot_battleroyale,
+        Mode mode,
+        bool human_playing,
+        bool has_learning_bot,
+        bool is_learning_from_human
+  );
   ~Raven_Game();
 
   //the usual suspects
