@@ -644,7 +644,22 @@ void HandleGameStatus(HWND hWnd, int status)
         OpenDialog(hWnd);
     }
 }
+void InitGameParameters() {
+    match_mode = Raven_Game::Mode::DeathMatch;
+    human_playing = false;
+    has_learning_bots = false;
+    learn_from_human = false;
 
+    // DEATHMATCH 
+    bot_number_deathmatch = DEATH_MATCH_INIT_BOT;
+
+    // TEAM DEATH MATCH
+    bot_number_team_1 = TEAM_MATCH_INIT_BOT;
+    bot_number_team_2 = TEAM_MATCH_INIT_BOT;
+
+    // DEATHMATCH 
+    bot_number_battleroyale = BATTLEROYALE_MATCH_INIT_BOT;
+}
 //------------------------------- PARAM DIALOG --------------------------------
 
 BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -657,6 +672,9 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
     {
     case WM_INITDIALOG:
     {
+        
+        InitGameParameters();
+
         staticbox = GetDlgItem(hwndDlg, 1);
         SetWindowText(staticbox, words);
         
@@ -680,9 +698,11 @@ BOOL CALLBACK DlgParamProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
         SendDlgItemMessage(hwndDlg, ID_BATTLEROYALE_SPIN, UDM_SETRANGE, 0, MAKELPARAM(BATTLEROYALE_MATCH_MAX_BOT, BATTLEROYALE_MATCH_MIN_BOT));
         SendDlgItemMessage(hwndDlg, ID_BATTLEROYALE_SPIN, UDM_SETPOS, 0, BATTLEROYALE_MATCH_INIT_BOT);
 
+        CheckDlgButton(hwndDlg, ID_RADIO_BOT, !learn_from_human);
 
-        HFONT hFont = CreateFont(1, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Arial");
-        SendMessage(hwndDlg, WM_SETFONT, (WPARAM)hFont, 0);
+
+        //HFONT hFont = CreateFont(1, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Arial");
+        //SendMessage(hwndDlg, WM_SETFONT, (WPARAM)hFont, 0);
 
         //Graphic update of the dialog
         EnableMatchModeWithID(hwndDlg, ID_GRPBOX_DEATHMATCH);

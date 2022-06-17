@@ -76,7 +76,7 @@ Raven_Game::Raven_Game(
     m_estEntraine = false;
     m_LancerApprentissage = false;
 
-    // todo : use interface
+    // todo : to be adapted
     m_maxApprentissage = 500;
 }
 
@@ -333,12 +333,14 @@ int Raven_Game::Update()
             }
         }
         (*curBot)->Update();
-        if ((m_TrainingSet.GetInputSet().size() < m_maxApprentissage) && (*curBot)->GetTargetShoot().size() > 0) {
-            if((m_learningFromHuman &&  (*curBot)->isPossessed() && (*curBot)->Score() >= 1) ||    // si on apprend de l'humain : il faut le posséder ET avoir tuer au moins un bot
-                (!m_learningFromHuman && (*curBot)->Score() > 2)) {                                // sinon il apprend DES bots qui ont fait au moins 3 morts
-                //ajouter une observation au jeu d'entrainement
-                AddData((*curBot)->GetDataShoot(), (*curBot)->GetTargetShoot());
-                debug_con << "la taille du training set " << m_TrainingSet.GetInputSet().size() << "";
+        if(m_learning_bots){
+            if ((m_TrainingSet.GetInputSet().size() < m_maxApprentissage) && (*curBot)->GetTargetShoot().size() > 0) {
+                if((m_learningFromHuman &&  (*curBot)->isPossessed() && (*curBot)->Score() >= 1) ||    // si on apprend de l'humain : il faut le posséder ET avoir tuer au moins un bot
+                   (!m_learningFromHuman && (*curBot)->Score() > 2)) {                                // sinon il apprend DES bots qui ont fait au moins 3 morts
+                    //ajouter une observation au jeu d'entrainement
+                    AddData((*curBot)->GetDataShoot(), (*curBot)->GetTargetShoot());
+                    debug_con << "la taille du training set " << m_TrainingSet.GetInputSet().size() << "";
+                }
             }
         }
     }  
@@ -845,7 +847,7 @@ void Raven_Game::GetPlayerKey(Vector2D direction)const
         m_pSelectedBot->GetBrain()->RemoveAllSubgoals();
 
 
-        m_pSelectedBot->GetBrain()->AddGoal_MoveToPosition(m_pSelectedBot->Pos() + direction);
+        m_pSelectedBot->GetBrain()->AddGoal_MoveToPosition(m_pSelectedBot->Pos() + direction * (m_pSelectedBot->BRadius()*2.f));
     }
 }
 

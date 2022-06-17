@@ -166,7 +166,7 @@ Vector2D Raven_Steering::CalculatePrioritized()
   //these next three can be combined for flocking behavior (wander is
   //also a good behavior to add into this mix)
 
-    if (On(separation))
+    if (On(separation) && m_pRaven_Bot->isPossessed() == false)
     {
       force = Separation(m_pWorld->GetAllBots()) * m_dWeightSeparation;
 
