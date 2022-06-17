@@ -11,6 +11,7 @@
 #include "Goal_Wander.h"
 #include "Raven_Goal_Types.h"
 #include "Goal_AttackTarget.h"
+#include "Goal_Fuite.h"
 
 
 #include "GetWeaponGoal_Evaluator.h"
@@ -18,6 +19,7 @@
 #include "ExploreGoal_Evaluator.h"
 #include "AttackTargetGoal_Evaluator.h"
 #include "GetLootGoal_Evaluator.h"
+#include "FuiteGoal_Evaluator.h"
 
 
 Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_think)
@@ -35,6 +37,7 @@ Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_thi
   double ExploreBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
   double AttackBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
   double LootBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
+  double FuiteBias = RandInRange(LowRangeOfBias, HighRangeOfBias);
 
   //create the evaluator objects
   m_Evaluators.push_back(new GetHealthGoal_Evaluator(HealthBias));
@@ -47,6 +50,7 @@ Goal_Think::Goal_Think(Raven_Bot* pBot):Goal_Composite<Raven_Bot>(pBot, goal_thi
   m_Evaluators.push_back(new GetWeaponGoal_Evaluator(RocketLauncherBias,
                                                      type_rocket_launcher));
   m_Evaluators.push_back(new GetLootGoal_Evaluator(LootBias));
+  m_Evaluators.push_back(new FuiteGoal_Evaluator(FuiteBias));
 }
 
 //----------------------------- dtor ------------------------------------------
@@ -167,6 +171,15 @@ void Goal_Think::AddGoal_AttackTarget()
     RemoveAllSubgoals();
     AddSubgoal( new Goal_AttackTarget(m_pOwner));
   }
+}
+
+void Goal_Think::AddGoal_Fuite()
+{
+    if (notPresent(goal_fuite))
+    {
+        RemoveAllSubgoals();
+        AddSubgoal(new Goal_Fuite(m_pOwner));
+    }
 }
 
 //-------------------------- Queue Goals --------------------------------------
