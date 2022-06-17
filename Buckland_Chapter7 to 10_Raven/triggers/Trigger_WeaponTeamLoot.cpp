@@ -37,6 +37,24 @@ Trigger_WeaponTeamLoot::Trigger_WeaponTeamLoot(Vector2D pos, Raven_Team* team, R
     else {
         SetActive();
     }
+
+
+
+    //create the vertex buffer for the rocket shape
+    const int NumRocketVerts = 8;
+    const Vector2D rip[NumRocketVerts] = { Vector2D(0, 3),
+                                            Vector2D(1, 2),
+                                            Vector2D(1, 0),
+                                            Vector2D(2, -2),
+                                            Vector2D(-2, -2),
+                                            Vector2D(-1, 0),
+                                            Vector2D(-1, 2),
+                                            Vector2D(0, 3) };
+
+    for (int i = 0; i < NumRocketVerts; ++i)
+    {
+        m_vecRLVB.push_back(rip[i]);
+    }
 }
 
 void Trigger_WeaponTeamLoot::Try(Raven_Bot* pBot)
@@ -93,7 +111,7 @@ void Trigger_WeaponTeamLoot::Render(){
             //gdi->WhiteBrush();
         }
         gdi->Circle(Pos(), BRadius()*2.f);
-/*
+
         switch (m_weaponType)
         {
         case type_rail_gun:
@@ -121,24 +139,6 @@ void Trigger_WeaponTeamLoot::Render(){
 
         case type_rocket_launcher:
         {
-            //vrtex buffers for rocket shape
-            std::vector<Vector2D>         m_vecRLVB;
-            std::vector<Vector2D>         m_vecRLVBTrans;
-            //create the vertex buffer for the rocket shape
-            const int NumRocketVerts = 8;
-            const Vector2D rip[NumRocketVerts] = { Vector2D(0, 3),
-                                                    Vector2D(1, 2),
-                                                    Vector2D(1, 0),
-                                                    Vector2D(2, -2),
-                                                    Vector2D(-2, -2),
-                                                    Vector2D(-1, 0),
-                                                    Vector2D(-1, 2),
-                                                    Vector2D(0, 3) };
-
-            for (int i = 0; i < NumRocketVerts; ++i)
-            {
-                m_vecRLVB.push_back(rip[i]);
-            }
 
             Vector2D facing(-1, 0);
 
@@ -167,6 +167,6 @@ void Trigger_WeaponTeamLoot::Render(){
         break;
 
         }//end switch
-*/
+
     }
 }

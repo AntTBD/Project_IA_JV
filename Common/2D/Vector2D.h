@@ -37,6 +37,7 @@ struct Vector2D
   inline double    LengthSq()const;
 
   inline void      Normalize();
+  inline Vector2D Normalization();
 
   inline double    Dot(const Vector2D& v2)const;
 
@@ -250,7 +251,20 @@ inline void Vector2D::Normalize()
     this->y /= vector_length;
   }
 }
+inline Vector2D Vector2D::Normalization()
+{
+    double vector_length = this->Length();
 
+    double x = 0.f;
+    double y = 0.f;
+
+    if (vector_length > std::numeric_limits<double>::epsilon())
+    {
+        x = this->x / vector_length;
+        y = this->y / vector_length;
+    }
+    return Vector2D(x, y);
+}
 
 //------------------------------------------------------------------------non member functions
 

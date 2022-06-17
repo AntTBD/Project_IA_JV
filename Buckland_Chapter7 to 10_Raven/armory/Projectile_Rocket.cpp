@@ -19,7 +19,7 @@ Rocket::Rocket(Raven_Bot* shooter, Vector2D target):
                          shooter->GetWorld(),
                          shooter->ID(),
                          shooter->Pos(),
-                         shooter->Facing(),
+                         (target - shooter->Pos()).Normalization(),
                          script->GetInt("Rocket_Damage"),
                          script->GetDouble("Rocket_Scale"),
                          script->GetDouble("Rocket_MaxSpeed"),

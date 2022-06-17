@@ -18,6 +18,11 @@ private :
     int m_ammoCurrentWeaponType;
     Raven_Game* m_pWorld;
 
+
+    //vrtex buffers for rocket shape
+    std::vector<Vector2D>         m_vecRLVB;
+    std::vector<Vector2D>         m_vecRLVBTrans;
+
 public :
     // if undifined team, set it to NULL
     Trigger_WeaponTeamLoot(Vector2D pos, Raven_Team* team, Raven_Weapon* weapon, Raven_Game* world, int node_idx);

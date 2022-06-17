@@ -14,7 +14,7 @@ double FuiteGoal_Evaluator::CalculateDesirability(Raven_Bot* pBot)
 	double desirability = 0.02;
 
 	if (pBot->Health() <= 20){
-		desirability = 1;
+		desirability = 0.5;
 	}
 	else {
 		desirability *= m_dCharacterBias + 0.03;

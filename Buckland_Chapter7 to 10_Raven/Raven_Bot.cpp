@@ -253,6 +253,7 @@ bool Raven_Bot::HandleMessage(const Telegram& msg) {
         case Msg_TakeThatMF:
             if (HasTeam()) {
                 if (GetTeam()->GetLeader() == this) {
+                    debug_con << GetTeam()->GetName() << " Leader need protection (en cercle)" << "";
                     GetTeam()->SetProtection();
                 }
             }
@@ -606,7 +607,7 @@ void Raven_Bot::Render()
 
   if (UserOptions->m_bShowBotIDs)
   {
-    gdi->TextAtPos(Pos().x -10, Pos().y-20, std::to_string(ID()) + (HasTeam() ? " " + m_pTeam->GetName() : ""));
+    gdi->TextAtPos(Pos().x -10, Pos().y-20, std::to_string(ID()) + (HasTeam() ? " " + m_pTeam->GetName() + (GetTeam()->GetLeader() == this ? " L":"") : ""));
   }
 
   if (UserOptions->m_bShowBotHealth)
