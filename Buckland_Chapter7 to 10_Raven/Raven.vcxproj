@@ -218,6 +218,8 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="goals\FuiteGoal_Evaluator.cpp" />
+    <ClCompile Include="goals\Goal_Fuite.cpp" />
     <ClCompile Include="main.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -540,6 +542,8 @@
     <ClCompile Include="triggers\Trigger_WeaponTeamLoot.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="goals\FuiteGoal_Evaluator.h" />
+    <ClInclude Include="goals\Goal_Fuite.h" />
     <ClInclude Include="neuralNetwork\CData.h" />
     <ClInclude Include="neuralNetwork\CNeuralNet.h" />
     <ClInclude Include="Raven_Bot.h" />
@@ -660,6 +664,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="Params.ini" />
     <None Include="Params.lua" />
     <None Include="note.txt" />
     <None Include="maps\Raven_DM1.map" />
